@@ -1,0 +1,11 @@
+.o-avatar {
+  display: inline-block;
+  height: 0;
+  overflow: hidden;
+  padding-bottom: 100%;
+
+  img {
+    border-radius: 100px;
+    border: 1px solid rgba(0, 0, 0, .2);
+  }
+}

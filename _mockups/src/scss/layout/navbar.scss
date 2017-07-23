@@ -1,0 +1,77 @@
+.l-navbar {
+  z-index: 4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $l-navbar-height;
+  padding: 0 15px;;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+
+  color: #fff;
+  background: $color-dark;
+
+  > * {
+    flex: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &.as--success {
+    background: $color-success;
+  }
+
+  &.as--warning {
+    background: $color-warning;
+  }
+
+  &.as--danger {
+    background: $color-danger;
+  }
+
+  &__avatar {
+    margin-top: 20px;
+    max-width: 60px;
+  }
+
+  &__username {
+    font-size: 20px;
+    font-weight: 300;
+    padding: 0 15px;
+    flex-grow: 3;
+    overflow: hidden;
+  }
+
+  &__spot {
+    max-width: 100px;
+    text-align: right;
+
+    &-label {
+      vertical-align: middle;
+      display: inline-block;
+      text-align: center;
+      font-weight: 300;
+      text-transform: uppercase;
+      font-size: 15px;
+
+      strong {
+        font-size: 11px;
+        font-weight: bold;
+        display: block;
+      }
+    }
+
+    &-value {
+      vertical-align: middle;
+      display: inline-block;
+      font-size: 30px;
+      font-weight: bold;
+      padding: 0 2px;
+    }
+  }
+}

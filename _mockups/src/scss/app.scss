@@ -4,6 +4,7 @@
 @import "_settings/media-queries";
 @import "_settings/colors";
 @import "_settings/typography";
+@import "_settings/layout";
 
 /* ------------------------- *\
     Elements
@@ -15,7 +16,14 @@
 /* ------------------------- *\
     Objects
 \* ------------------------- */
-@import "objects/buttons";
+@import "objects/avatar";
+@import "objects/button";
+
+/* ------------------------- *\
+    Layout
+\* ------------------------- */
+@import "layout/navbar";
+@import "layout/screen";
 
 /* ------------------------- *\
     Screens
