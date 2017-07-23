@@ -1,0 +1,214 @@
+@mixin o-button-color($color, $background, $border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  a:hover &,
+  button:hover &,
+  &:hover,
+  a:focus &,
+  button:focus &,
+  &:focus,
+  &.focus,
+  a:active &,
+  button:active &,
+  &:active,
+  &.active {
+    color: $color;
+    background-color: darken($background, 5%);
+    border-color: darken($border, 20%);
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, .1);
+  }
+
+  html body &.as--loading:after {
+    color: $color;
+  }
+}
+
+@mixin o-button-size($padding-vertical, $padding-horizontal, $font-size, $line-height) {
+  padding: $padding-vertical $padding-horizontal;
+  font-size: $font-size;
+  line-height: $line-height;
+}
+
+@mixin o-button-base() {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  white-space: normal;
+  transition: .2s;
+  user-select: none;
+  min-width: 1.9em;
+  outline: none;
+
+  @include o-button-color($color-dark, $color-soft, darken($color-soft, 5%));
+  @include o-button-size(6px, 12px, $font-size-base, 1.4);
+
+  &:active {
+    &:focus {
+      outline: thin dotted;
+      outline-offset: -2px;
+    }
+  }
+
+  &:active {
+    outline: 0;
+    background-image: none;
+  }
+}
+
+.o-button {
+  @include o-button-base ();
+}
+
+/* ------------------------- *\
+    Sizes
+\* ------------------------- */
+.o-button {
+  &.as--xl {
+    @include o-button-size(10px, 20px, $font-size-large, 1.5);
+  }
+  &.as--lg {
+    @include o-button-size(6px, 14px, $font-size-large, 1.5);
+  }
+  &.as--sm {
+    @include o-button-size(4px, 8px, $font-size-small, 1.5);
+  }
+  &.as--xs {
+    @include o-button-size(1px, 5px, $font-size-small, 1.5);
+  }
+  &.as--xxs {
+    @include o-button-size(2px, 2px, $font-size-xsmall, 1.1);
+  }
+
+  &.as--block {
+    display: block;
+    width: 100%;
+
+    & + & {
+      margin-top: 5px;
+    }
+  }
+
+  &.as--rounded {
+    border-radius: 100px;
+  }
+}
+
+/* ------------------------- *\
+    Colors
+\* ------------------------- */
+.o-button {
+  &.as--link {
+    @include o-button-color($color-primary, transparent, transparent);
+    text-decoration: underline;
+
+    a:hover &,
+    button:hover &,
+    &:hover,
+    a:focus &,
+    button:focus &,
+    &:focus,
+    &.focus,
+    a:active &,
+    button:active &,
+    &:active,
+    &.active {
+      text-decoration: none;
+      box-shadow: none;
+    }
+  }
+  &.as--primary {
+    @include o-button-color(#fff, $color-primary, $color-primary);
+  }
+  &.as--secondary {
+    @include o-button-color($color-primary, #fff, $color-primary);
+  }
+  &.as--dark {
+    @include o-button-color(#fff, $color-dark, $color-dark)
+  }
+  &.as--success {
+    @include o-button-color(#fff, $color-success, $color-success);
+  }
+  &.as--warning {
+    @include o-button-color(#fff, $color-warning, $color-warning);
+  }
+  &.as--danger {
+    @include o-button-color(#fff, $color-danger, $color-danger);
+  }
+}
+
+/* ------------------------- *\
+    Disabled
+\* ------------------------- */
+fieldset[disabled] .o-button,
+[disabled] .o-button,
+.as--disabled .o-button,
+.o-button.as--disabled,
+.o-button[disabled] {
+  cursor: not-allowed;
+  pointer-events: none; // Future-proof disabling of clicks
+  opacity: .65;
+  box-shadow: none;
+  color: #999 !important;
+
+  &:not(.as--link) {
+    background: #eee repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.02) 2px,
+        rgba(0, 0, 0, 0.02) 4px
+    ) !important;
+    border-color: #ddd !important;
+  }
+
+  &.as--link {
+    text-decoration: line-through !important;
+  }
+}
+
+/* ------------------------- *\
+    Loading
+\* ------------------------- */
+html body .o-button.as--loading {
+  pointer-events: none;
+  position: relative;
+  color: transparent !important;
+
+  &:after {
+    animation: button-loader-spin 500ms infinite linear;
+    font-size: inherit;
+    border: .2em solid;
+    border-radius: .7em;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 1.4em;
+    left: 50%;
+    margin-left: -.7em;
+    margin-top: -.7em;
+    position: absolute;
+    top: 50%;
+    width: 1.4em;
+    z-index: 1;
+  }
+}
+
+@keyframes button-loader-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
