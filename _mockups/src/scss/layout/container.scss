@@ -1,0 +1,18 @@
+.l-container {
+  margin: 0 auto;
+  padding: 20px;
+  flex-grow: 1;
+  width: 100%;
+
+  &:not(.as--full) {
+    max-width: 1200px;
+  }
+
+  &.as--narrow {
+    max-width: 800px;
+  }
+
+  &.as--tiny {
+    max-width: 600px;
+  }
+}

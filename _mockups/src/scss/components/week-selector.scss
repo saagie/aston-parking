@@ -1,0 +1,30 @@
+.c-week-selector {
+  width: 100%;
+  text-align: center;
+  font-weight: 300;
+  margin: 15px 0;
+
+  &__title {
+    display: inline-block;
+  }
+
+  &__buttons {
+    display: inline-block;
+    margin: 10px 5px;
+  }
+
+  .o-button {
+    margin: 5px;
+    font-size: 14px;
+
+    &.as--primary::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: $color-primary;
+    }
+  }
+}

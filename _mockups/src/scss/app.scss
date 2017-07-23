@@ -18,12 +18,20 @@
 \* ------------------------- */
 @import "objects/avatar";
 @import "objects/button";
+@import "objects/spot";
+
+/* ------------------------- *\
+    Components
+\* ------------------------- */
+@import "components/week-selector";
+@import "components/spots-grid";
 
 /* ------------------------- *\
     Layout
 \* ------------------------- */
 @import "layout/navbar";
 @import "layout/screen";
+@import "layout/container";
 
 /* ------------------------- *\
     Screens
