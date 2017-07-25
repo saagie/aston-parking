@@ -1,11 +1,35 @@
 .o-avatar {
+  position: relative;
   display: inline-block;
   height: 0;
-  overflow: hidden;
   padding-bottom: 100%;
 
   img {
     border-radius: 100px;
-    border: 1px solid rgba(0, 0, 0, .2);
+    border: 2px solid rgba(0, 0, 0, .2);
+  }
+
+  &.as--you {
+    &:after {
+      display: none;
+      content: 'YOU';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: #fff;
+      background: $color-success;
+      padding: 2px 4px;
+      border-radius: 2px;
+
+      @media only screen and (min-width: $mq-sm) {
+        display: block;
+      }
+    }
+
+    img {
+      border-color: $color-success;
+    }
   }
 }

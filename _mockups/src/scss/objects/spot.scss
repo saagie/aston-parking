@@ -1,16 +1,14 @@
 .o-spot {
   position: relative;
+  display: block;
   color: #fff;
   background: $color-dark;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, .1);
   font-size: 14px;
-
-  &__inner {
-    width: 100%;
-    height: 0;
-    padding-bottom: 130%;
-  }
+  transition: .2s;
+  height: 0;
+  padding-bottom: 130%;
 
   &__day {
     z-index: 2;
@@ -27,7 +25,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    min-width: 35px;
+    min-width: 25px;
     width: 100px;
     max-width: 72%;
     margin-top: -2px;
@@ -41,9 +39,21 @@
     bottom: 5px;
     text-align: center;
     font-weight: 600;
+    font-size: 12px;
+
+    @media only screen and (min-width: $mq-md) {
+      font-size: 16px;
+    }
   }
 
-  &__today {
+  /* ------------------------- *\
+      Today
+  \* ------------------------- */
+  &.as--today {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  }
+
+  &__today-label {
     position: absolute;
     top: 100%;
     left: 0;
@@ -51,8 +61,155 @@
     text-align: center;
     color: $color-dark;
     text-transform: uppercase;
-    padding-top: 5px;
-    font-weight: 600;
-    font-size: 10px;
+    padding-top: 6px;
+    font-weight: bold;
+    font-size: 11px;
   }
+
+  /* ------------------------- *\
+      Add state
+  \* ------------------------- */
+  &.as--add {
+    cursor: pointer;
+    background: $color-primary;
+
+    &:hover {
+      background: darken($color-primary, 10%);
+    }
+  }
+
+  &__add-icon {
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: -2px;
+    min-width: 20px;
+    width: 100px;
+    max-width: 60%;
+
+    i {
+      width: 100%;
+    }
+  }
+
+  /* ------------------------- *\
+      Disabled state
+  \* ------------------------- */
+  &.as--disabled {
+    color: $color-dark;
+    cursor: not-allowed;
+    background: $color-soft;
+  }
+
+  &__disabled-icon {
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: -2px;
+    min-width: 20px;
+    width: 100px;
+    max-width: 60%;
+    opacity: .2;
+
+    i {
+      width: 100%;
+    }
+  }
+
+  /* ------------------------- *\
+      Locked state
+  \* ------------------------- */
+  &.as--locked {
+    cursor: pointer;
+    background: $color-success;
+
+    &:hover {
+      background: darken($color-success, 10%);
+    }
+  }
+
+  &.as--locked &__number {
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    bottom: auto;
+    margin-top: -2px;
+    transform: translateY(-50%);
+    font-size: 14px;
+
+    @media only screen and (min-width: $mq-sm) {
+      font-size: 20px;
+    }
+  }
+
+  &.as--today.as--locked &__number {
+    font-size: 20px;
+
+    @media only screen and (min-width: $mq-sm) {
+      font-size: 26px;
+    }
+  }
+
+  &:hover &__unlock-icon {
+    opacity: 1;
+  }
+  &__unlock-icon {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 300;
+    opacity: .6;
+
+    @media only screen and (min-width: $mq-sm) {
+      font-size: 22px;
+    }
+  }
+
+  /* ------------------------- *\
+      Empty state
+  \* ------------------------- */
+  &.as--empty {
+    background: $color-danger;
+  }
+  &.as--available-spot {
+    background: $color-warning;
+  }
+
+  &.as--empty &__number {
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    bottom: auto;
+    margin-top: -2px;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: 300;
+
+    @media only screen and (min-width: $mq-sm) {
+      font-size: 20px;
+    }
+  }
+
+  &__empty-label {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9px;
+    opacity: .8;
+
+    @media only screen and (min-width: $mq-sm) {
+      font-size: 12px;
+      bottom: 10px;
+    }
+  }
+
 }
