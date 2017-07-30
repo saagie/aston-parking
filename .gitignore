@@ -3,3 +3,15 @@
 
 node_modules
 dist
+
+# Distribution
+build/
+
+# elm-package generated files
+elm-stuff
+
+# elm-repl generated files
+repl-temp-*
+
+app/elm/public/app.js
+app/elm/public/css/app.css

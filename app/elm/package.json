@@ -1,0 +1,31 @@
+{
+  "name": "aston-parking-elm",
+  "version": "0.1.0",
+  "description": "A little application for auto attribution of company parking spots.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "static": "cp ../../_mockups/dist/css/app.css public/css",
+    "build:elm": "elm-make src/Main.elm --output public/app.js",
+    "build": "npm run static && npm run build:elm",
+    "start": "npm run build && hs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saagie/aston-parking.git"
+  },
+  "keywords": [
+    "parking",
+    "spots",
+    "elm"
+  ],
+  "author": "Saagie Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saagie/aston-parking/issues"
+  },
+  "homepage": "https://github.com/saagie/aston-parking#readme"
+}
