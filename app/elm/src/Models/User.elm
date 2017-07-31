@@ -1,6 +1,7 @@
-module Models.User exposing(User)
+module Models.User exposing (User)
+
 
 type alias User =
-  { name: String
-  , image: String
-  }
+    { name : String
+    , image : String
+    }
