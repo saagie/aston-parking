@@ -16,12 +16,6 @@
   color: #fff;
   background: $color-dark;
 
-  > * {
-    flex: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   &.as--success {
     background: $color-success;
   }
@@ -41,15 +35,20 @@
   }
 
   &__username {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     font-size: 18px;
+    line-height: 1.4;
     font-weight: 300;
     padding: 0 15px;
-    flex-grow: 3;
-    overflow: hidden;
   }
 
   &__spot {
-    max-width: 100px;
+    flex: none;
+    white-space: nowrap;
+    margin-left: auto;
+    min-width: 0;
     text-align: right;
 
     &-label {
