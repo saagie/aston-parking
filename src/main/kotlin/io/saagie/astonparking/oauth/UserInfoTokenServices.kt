@@ -1,4 +1,4 @@
-package io.saagie.astonparking
+package io.saagie.astonparking.oauth
 
 import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor
