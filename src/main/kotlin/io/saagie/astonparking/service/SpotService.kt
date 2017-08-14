@@ -26,4 +26,13 @@ class SpotService(@Autowired val spotDao: SpotDao) {
         spotDao.save(spot)
         return spot
     }
+
+    fun createSpot(spot: Spot): Spot {
+        return spotDao.save(spot)
+    }
+
+    fun deleteSpot(number: Int) {
+        val spot = spotDao.findByNumber(number)
+        spotDao.delete(spot)
+    }
 }

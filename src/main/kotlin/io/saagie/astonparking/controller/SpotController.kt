@@ -4,6 +4,7 @@ import io.saagie.astonparking.domain.Spot
 import io.saagie.astonparking.domain.State
 import io.saagie.astonparking.service.SpotService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -23,5 +24,16 @@ class SpotController(@Autowired val spotService: SpotService) {
     fun updateSpot(@PathVariable(name = "number", required = true) number: Int,
                    @PathVariable(name = "state", required = true) state: State): Spot? {
         return spotService.updateSpot(number, state)
+    }
+
+    @PostMapping("/spot")
+    fun createSpot(@RequestBody spot: Spot): Spot {
+        return spotService.createSpot(spot)
+    }
+
+    @DeleteMapping("/spot/{number}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteSpot(@PathVariable(name = "number", required = true) number: Int) {
+        spotService.deleteSpot(number)
     }
 }
