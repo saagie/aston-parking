@@ -36,8 +36,7 @@ class SSOFilter : WebSecurityConfigurerAdapter(false) {
                 .authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll()
                 .and()
-                /*.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()*/
+                .csrf().disable()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter::class.java)
         // @formatter:on
     }
