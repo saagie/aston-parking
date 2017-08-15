@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 class SpotController(@Autowired val spotService: SpotService) {
 
     @GetMapping("/spot")
-    fun getAllSpots(@RequestParam(name = "state", required = false) state: String?): MutableIterable<Spot>? {
+    fun getAllSpots(@RequestParam(name = "state", required = false) state: String?): List<Spot>? {
         return spotService.getAllSpots(state)
     }
 

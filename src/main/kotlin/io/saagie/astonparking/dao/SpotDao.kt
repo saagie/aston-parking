@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface SpotDao : CrudRepository<Spot, String> {
 
-    fun findByState(state: State): MutableIterable<Spot>?
+    fun findByState(state: State): List<Spot>?
     fun findByNumber(number: Int): Spot?
 }

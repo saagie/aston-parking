@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service
 @Service
 class SpotService(@Autowired val spotDao: SpotDao) {
 
-    fun getAllSpots(state: String?): MutableIterable<Spot>? {
+    fun getAllSpots(state: String?): List<Spot>? {
         when (state) {
             State.FIXED.name, State.FREE.name -> return spotDao.findByState(State.valueOf(state))
-            else -> return spotDao.findAll()
+            else -> return spotDao.findAll() as List<Spot>
         }
     }
 
