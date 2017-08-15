@@ -21,6 +21,7 @@ class SpotServiceTest {
         on { findAll() }.doReturn(allSpots)
         on { findByState(State.FIXED) }.doReturn(allSpots.filter { it.state == State.FIXED })
         on { findByState(State.FREE) }.doReturn(allSpots.filter { it.state == State.FREE })
+        on { findByNumber(allSpots.first().number) }.doReturn(allSpots.first())
     }
 
     val spotService = SpotService(spotDao)
@@ -67,6 +68,24 @@ class SpotServiceTest {
         returnedAllSpotsWithFree `should equal` allSpots.filter { it.state == State.FREE }
     }
 
+
+    @Test
+    fun should_return_a_spot_when_number_exists() {
+        //Given
+        //When
+        val spot = spotService.getSpot(allSpots.first().number)
+        //Then
+        spot `should be` allSpots.first()
+    }
+
+    @Test
+    fun should_return_null_when_number_doesnt_exists() {
+        //Given
+        //When
+        val spot = spotService.getSpot(0)
+        //Then
+        spot `should be` null
+    }
 
     private fun initAllSpots(): List<Spot> {
         return arrayListOf<Spot>(
