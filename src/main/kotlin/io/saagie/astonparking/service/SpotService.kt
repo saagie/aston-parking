@@ -5,6 +5,7 @@ import io.saagie.astonparking.domain.Spot
 import io.saagie.astonparking.domain.State
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.IllegalArgumentException
 
 @Service
 class SpotService(@Autowired val spotDao: SpotDao) {
@@ -12,7 +13,8 @@ class SpotService(@Autowired val spotDao: SpotDao) {
     fun getAllSpots(state: String?): List<Spot>? {
         when (state) {
             State.FIXED.name, State.FREE.name -> return spotDao.findByState(State.valueOf(state))
-            else -> return spotDao.findAll() as List<Spot>
+            null -> return spotDao.findAll() as List<Spot>
+            else -> throw IllegalArgumentException("State is unknown")
         }
     }
 
