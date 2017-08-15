@@ -8,14 +8,16 @@ import io.saagie.astonparking.domain.State
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.junit.Test
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.ArgumentCaptor
+import org.mockito.Mockito.*
 import java.lang.IllegalArgumentException
 import kotlin.test.fail
 
 class SpotServiceTest {
 
     val allSpots = initAllSpots()
+
+    val spotCaptor = ArgumentCaptor.forClass(Spot::class.java)
 
     val spotDao: SpotDao = mock<SpotDao> {
         on { findAll() }.doReturn(allSpots)
@@ -33,8 +35,8 @@ class SpotServiceTest {
         val returnedAllSpots = spotService.getAllSpots(null)
         // Then
         verify(spotDao).findAll()
-        verify(spotDao, times(0)).findByState(State.FREE)
-        verify(spotDao, times(0)).findByState(State.FIXED)
+        verify(spotDao, never()).findByState(State.FREE)
+        verify(spotDao, never()).findByState(State.FIXED)
         returnedAllSpots `should equal` allSpots
     }
 
@@ -49,9 +51,9 @@ class SpotServiceTest {
             e.message `should be` "State is unknown"
         }
         // Then
-        verify(spotDao, times(0)).findAll()
-        verify(spotDao, times(0)).findByState(State.FREE)
-        verify(spotDao, times(0)).findByState(State.FIXED)
+        verify(spotDao, never()).findAll()
+        verify(spotDao, never()).findByState(State.FREE)
+        verify(spotDao, never()).findByState(State.FIXED)
     }
 
     @Test
@@ -61,7 +63,7 @@ class SpotServiceTest {
         val returnedAllSpotsWithFixed = spotService.getAllSpots(State.FIXED.name)
         val returnedAllSpotsWithFree = spotService.getAllSpots(State.FREE.name)
         // Then
-        verify(spotDao, times(0)).findAll()
+        verify(spotDao, never()).findAll()
         verify(spotDao, times(1)).findByState(State.FREE)
         verify(spotDao, times(1)).findByState(State.FIXED)
         returnedAllSpotsWithFixed `should equal` allSpots.filter { it.state == State.FIXED }
@@ -75,6 +77,7 @@ class SpotServiceTest {
         //When
         val spot = spotService.getSpot(allSpots.first().number)
         //Then
+        verify(spotDao, times(1)).findByNumber(100)
         spot `should be` allSpots.first()
     }
 
@@ -84,8 +87,23 @@ class SpotServiceTest {
         //When
         val spot = spotService.getSpot(0)
         //Then
+        verify(spotDao, never()).findByNumber(100)
         spot `should be` null
     }
+
+
+    @Test
+    fun should_update_spot() {
+        //Given
+        //When
+        val updatedSpot = spotService.updateSpot(100, State.FREE)
+        //Then
+        updatedSpot?.state `should be` State.FREE
+        verify(spotDao, times(1)).save(spotCaptor.capture())
+        spotCaptor.value.number `should be` 100
+        spotCaptor.value.state `should be` State.FREE
+    }
+
 
     private fun initAllSpots(): List<Spot> {
         return arrayListOf<Spot>(
