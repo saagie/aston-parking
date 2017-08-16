@@ -9,6 +9,7 @@ import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.junit.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.Matchers
 import org.mockito.Mockito.*
 import java.lang.IllegalArgumentException
 import kotlin.test.fail
@@ -24,6 +25,7 @@ class SpotServiceTest {
         on { findByState(State.FIXED) }.doReturn(allSpots.filter { it.state == State.FIXED })
         on { findByState(State.FREE) }.doReturn(allSpots.filter { it.state == State.FREE })
         on { findByNumber(allSpots.first().number) }.doReturn(allSpots.first())
+        on { save(Matchers.any(Spot::class.java)) }.doReturn(newSpot())
     }
 
     val spotService = SpotService(spotDao)
@@ -104,6 +106,31 @@ class SpotServiceTest {
         spotCaptor.value.state `should be` State.FREE
     }
 
+    @Test
+    fun should_create_a_new_spot() {
+        //Given
+        val spot = newSpot()
+        //When
+        val createdSpot = spotService.createSpot(spot)
+        //Then
+        verify(spotDao, times(1)).save(spotCaptor.capture())
+        spotCaptor.value.state `should be` State.FREE
+        spotCaptor.value.number `should be` 104
+        createdSpot `should equal` spot
+    }
+
+    @Test
+    fun should_delete_spot() {
+        //Given
+        //When
+        spotService.deleteSpot(100)
+        //Then
+        verify(spotDao, times(1)).delete(spotCaptor.capture())
+        verify(spotDao, times(1)).findByNumber(100)
+        spotCaptor.value.number `should be` 100
+    }
+
+    private fun newSpot() = Spot(null, 104, State.FREE)
 
     private fun initAllSpots(): List<Spot> {
         return arrayListOf<Spot>(
