@@ -26,6 +26,7 @@
         <kotlin.version>1.1.4</kotlin.version>
         <jackson-module-kotlin.version>2.9.0</jackson-module-kotlin.version>
         <kluent.version>1.15</kluent.version>
+        <jbot.version>3.0.2</jbot.version>
     </properties>
 
     <dependencies>
@@ -69,6 +70,11 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
             <version>${jackson-module-kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.ramswaroop.jbot</groupId>
+            <artifactId>jbot</artifactId>
+            <version>${jbot.version}</version>
         </dependency>
 
         <!-- Just for the login/logout demo START-->

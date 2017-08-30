@@ -10,6 +10,10 @@ slack:
     scope: identity.basic
   resource:
     userInfoUri: https://slack.com/api/users.identity?token=
+  botToken: "xoxb-226954490176-DXmvKTzLMwzggm6AvmAPtPIM"
+  commandToken: "RIJgcauY2CERZRZwvuELq2Y6"
 logging:
   level:
     org.springframework.security: WARN
+    io.saagie: WARN
+    me.ramswaroop.jbot: WARN
