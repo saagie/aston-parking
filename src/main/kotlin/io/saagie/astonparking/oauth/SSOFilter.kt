@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import javax.servlet.Filter
 
 @Configuration
@@ -35,8 +34,9 @@ class SSOFilter : WebSecurityConfigurerAdapter(false) {
         http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")).and().logout()
-                .logoutSuccessUrl("/").permitAll().and().csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+                .logoutSuccessUrl("/").permitAll()
+                .and()
+                .csrf().disable()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter::class.java)
         // @formatter:on
     }
