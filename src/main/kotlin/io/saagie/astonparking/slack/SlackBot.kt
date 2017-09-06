@@ -14,7 +14,7 @@ import org.springframework.web.socket.WebSocketSession
 @Component
 class SlackBot : Bot() {
 
-    @Value("\${slack.botToken}")
+    @Value("\${slackBotToken}")
     private val slackToken: String? = null
 
     override fun getSlackToken(): String? {

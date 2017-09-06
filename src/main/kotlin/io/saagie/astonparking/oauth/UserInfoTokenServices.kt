@@ -1,5 +1,6 @@
 package io.saagie.astonparking.oauth
 
+import io.saagie.astonparking.service.UserService
 import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor
@@ -18,7 +19,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import java.util.*
 
 
-open class UserInfoTokenServices(private val userInfoEndpointUrl: String, private val clientId: String) : ResourceServerTokenServices {
+open class UserInfoTokenServices(private val userInfoEndpointUrl: String, private val clientId: String, val userService: UserService) : ResourceServerTokenServices {
     var restTemplate: OAuth2RestOperations? = null
 
     internal var logger = LogFactory.getLog(this.javaClass)
@@ -38,6 +39,7 @@ open class UserInfoTokenServices(private val userInfoEndpointUrl: String, privat
 
             throw InvalidTokenException(accessToken)
         } else {
+            userService.updateUserInfo(map)
             return this.extractAuthentication(map)
         }
     }
