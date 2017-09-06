@@ -144,7 +144,7 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
 
 
         try {
-            val user = userService.find(userId)
+            val user = userService.get(userId)
             val richMessage = RichMessage("Profile : ${user.username}")
             if (!user.activated) {
                 richMessage.text = richMessage.text + """

@@ -18,9 +18,6 @@ class UserService(@Autowired val userDao: UserDao, @Autowired val slackDao: Slac
         return false
     }
 
-    fun find(userId: String): User {
-        return userDao.findOne(userId)
-    }
 
     fun updateUserInfo(map: Map<String, Any>) {
         val userMap = map.get("user") as Map<*, *>
