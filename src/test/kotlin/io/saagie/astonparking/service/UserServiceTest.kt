@@ -3,7 +3,6 @@ package io.saagie.astonparking.service
 import com.nhaarman.mockito_kotlin.*
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
-import me.ramswaroop.jbot.core.slack.SlackDao
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.`should not equal`
@@ -30,11 +29,11 @@ class UserServiceTest {
         on { findByEnable(true) }.doReturn(allUser.filter { it.activated })
     }
 
-    val slackDao: SlackDao = mock<SlackDao> {
+    val emailService: EmailService = mock<EmailService> {
 
     }
 
-    val userService = UserService(userDao, slackDao)
+    val userService = UserService(userDao, emailService)
 
     @Test
     fun should_return_an_existing_user() {

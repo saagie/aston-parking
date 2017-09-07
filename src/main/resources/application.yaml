@@ -11,6 +11,8 @@ url: "http://localhost:8080"
 slackBotToken: "xoxb-226954490176-Ni4j6r7HbG2q9Hi3oqIHGDPa"
 slashCommandToken: "RIJgcauY2CERZRZwvuELq2Y6"
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
+# MAIL
+
 ##########################
 # SECURITY
 slack:

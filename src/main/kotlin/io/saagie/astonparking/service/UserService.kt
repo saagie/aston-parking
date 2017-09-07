@@ -2,13 +2,14 @@ package io.saagie.astonparking.service
 
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
-import me.ramswaroop.jbot.core.slack.SlackDao
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 
 @Service
-class UserService(@Autowired val userDao: UserDao, @Autowired val slackDao: SlackDao) {
+class UserService(
+        @Autowired val userDao: UserDao,
+        @Autowired val emailService: EmailService) {
 
     fun registerUser(username: String, id: String): Boolean {
         if (!userDao.exists(id)) {
@@ -40,6 +41,7 @@ class UserService(@Autowired val userDao: UserDao, @Autowired val slackDao: Slac
                 user.enable = true
             }
             userDao.save(user)
+            emailService.profileCreated(user)
         }
     }
 

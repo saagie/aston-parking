@@ -26,3 +26,4 @@ nbdist/
 /.mvn/
 /mvnw
 src/main/resources/templates/
+!/src/main/resources/templates/
