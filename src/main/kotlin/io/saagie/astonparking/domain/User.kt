@@ -17,8 +17,6 @@ data class User(
         var image_512: String? = null,
         var creationDate: Date = Date.from(Instant.now()),
         val attribution: Int = 0,
-        val karma: Int = 0,
-        val demande: Int = 0,
         var enable: Boolean = false,
         var activated: Boolean = false
 ) {

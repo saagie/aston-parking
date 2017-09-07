@@ -163,12 +163,6 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
                         setText("Attribution : ${user.attribution}")
                     },
                     Attachment().apply {
-                        setText("Karma : ${user.karma}")
-                    },
-                    Attachment().apply {
-                        setText("Demande : ${user.demande}")
-                    },
-                    Attachment().apply {
                         setText("Status :  ${user.status()}")
                     }
             )

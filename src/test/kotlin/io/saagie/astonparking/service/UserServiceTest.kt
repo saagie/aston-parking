@@ -156,8 +156,6 @@ class UserServiceTest {
                         email = "mail1@mail.com",
                         creationDate = Date.from(Instant.now()),
                         attribution = 0,
-                        karma = 0,
-                        demande = 0,
                         enable = true,
                         activated = true),
                 User(
@@ -166,8 +164,6 @@ class UserServiceTest {
                         email = "mail2@mail.com",
                         creationDate = Date.from(Instant.now()),
                         attribution = 0,
-                        karma = 0,
-                        demande = 0,
                         enable = true,
                         activated = true),
                 User(
@@ -176,8 +172,6 @@ class UserServiceTest {
                         email = null,
                         creationDate = Date.from(Instant.now()),
                         attribution = 0,
-                        karma = 0,
-                        demande = 0,
                         enable = false,
                         activated = false),
                 User(
@@ -186,8 +180,6 @@ class UserServiceTest {
                         email = "mail4@mail.com",
                         creationDate = Date.from(Instant.now()),
                         attribution = 0,
-                        karma = 0,
-                        demande = 0,
                         enable = false,
                         activated = true)
         )
