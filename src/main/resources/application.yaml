@@ -1,7 +1,22 @@
+#APPLICATION
+## LOG
+logging:
+  level:
+    org.springframework.security: WARN
+    io.saagie: WARN
+    me.ramswaroop.jbot: WARN
+## GENERAL
+url: "http://localhost:8080"
+# SLACK BOT
+slackBotToken: "xoxb-226954490176-Ni4j6r7HbG2q9Hi3oqIHGDPa"
+slashCommandToken: "RIJgcauY2CERZRZwvuELq2Y6"
+rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
+##########################
+# SECURITY
 slack:
   client:
-    clientId: "3490096050.217656305830"
-    clientSecret: "46493610859295f7621f62a4be60d860"
+    clientId: "225187789888.225193189936"
+    clientSecret: "5104fde84aaf467439cdd820dea14c7e"
     accessTokenUri: https://slack.com/api/oauth.access
     userAuthorizationUri: https://slack.com/oauth/authorize
     tokenName: token
@@ -10,11 +25,3 @@ slack:
     scope: identity.basic
   resource:
     userInfoUri: https://slack.com/api/users.identity?token=
-  botToken: "xoxb-226954490176-DXmvKTzLMwzggm6AvmAPtPIM"
-  commandToken: "RIJgcauY2CERZRZwvuELq2Y6"
-rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
-logging:
-  level:
-    org.springframework.security: WARN
-    io.saagie: WARN
-    me.ramswaroop.jbot: WARN

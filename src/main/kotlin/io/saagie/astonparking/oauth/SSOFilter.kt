@@ -1,5 +1,6 @@
 package io.saagie.astonparking.oauth
 
+import io.saagie.astonparking.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties
@@ -26,6 +27,9 @@ class SSOFilter : WebSecurityConfigurerAdapter(false) {
     @Qualifier("oauth2ClientContext")
     @Autowired
     var oauth2ClientContext: OAuth2ClientContext? = null
+
+    @Autowired
+    lateinit var userService: UserService
 
 
     @Throws(Exception::class)
@@ -55,10 +59,10 @@ class SSOFilter : WebSecurityConfigurerAdapter(false) {
         val slackTemplate = OAuth2RestTemplate(slack(), oauth2ClientContext)
         slackFilter.setRestTemplate(slackTemplate)
         val tokenServices = UserInfoTokenServices(slackResource().userInfoUri,
-                slack().clientId)
+                slack().clientId, userService)
         tokenServices.setRestTemplate(slackTemplate)
         slackFilter.setTokenServices(
-                UserInfoTokenServices(slackResource().userInfoUri, slack().clientId))
+                UserInfoTokenServices(slackResource().userInfoUri, slack().clientId, userService))
         return slackFilter
     }
 
