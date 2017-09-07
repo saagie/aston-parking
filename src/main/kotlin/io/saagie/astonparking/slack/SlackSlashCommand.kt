@@ -43,10 +43,10 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
                     setText("/profile : to display your AstonParking profile")
                 },
                 Attachment().apply {
-                    setText("/disable : to disable your AstonParking profile")
+                    setText("/inactive-profile : to disable your AstonParking profile")
                 },
                 Attachment().apply {
-                    setText("/enable : to enable your AstonParking profile")
+                    setText("/active-profile : to enable your AstonParking profile")
                 }
         )
         richMessage.attachments = attachments
