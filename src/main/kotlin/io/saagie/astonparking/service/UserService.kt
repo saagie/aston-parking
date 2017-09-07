@@ -61,12 +61,14 @@ class UserService(
         val user = userDao.findOne(id)
         user.enable = !user.enable
         userDao.save(user)
+        emailService.profileStatusChange(user)
     }
 
     fun changeStatus(id: String, status: Boolean) {
         val user = userDao.findOne(id)
         user.enable = status
         userDao.save(user)
+        emailService.profileStatusChange(user)
     }
 
 }
