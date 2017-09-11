@@ -48,29 +48,34 @@ class SlackBot : Bot() {
     }
 
     fun proposition(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>, nextMonday: LocalDate) {
+
+        val message = Message("*******************\n")
+        message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ISO_DATE)} \n"
+        message.text += generateTextForSlack(propositions, sortedActiveUsers)
+        message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
+        message.text += "*******************"
+        val restTemplate = RestTemplate()
+        try {
+            restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
+        } catch (e: RestClientException) {
+            logger.error("Error posting to Slack Incoming Webhook: ", e)
+        }
+    }
+
+    fun generateTextForSlack(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
         val spotPerUser = propositions.associateBy(
                 keySelector = { prop -> prop.spotNumber },
                 valueTransform = { prop ->
                     sortedActiveUsers.filter { it.id == prop.userId }.first()
                 })
-        val restTemplate = RestTemplate()
-        val richMessage = Message("*******************\n")
 
-        richMessage.text += "Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ISO_DATE)} \n"
+        var message = ""
         spotPerUser.forEach(
                 {
-                    richMessage.text += "*${it.key}* -> <@${it.value.id}|${it.value.username}>\n"
+                    message += ":parking: *${it.key}* :arrow_right: <@${it.value.id}|${it.value.username}>\n"
                 }
         )
-        richMessage.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
-        richMessage.text += "*******************"
-        try {
-            restTemplate.postForEntity<String>(slackWebhookUrl, richMessage, String::class.java)
-        } catch (e: RestClientException) {
-            logger.error("Error posting to Slack Incoming Webhook: ", e)
-        }
-
-
+        return message
     }
 
 

@@ -63,4 +63,9 @@ class DrawService(
                 .getAllActive()
                 .sortedBy { it.attribution }
     }
+
+    fun getAllPropositions(): ArrayList<Proposition>? {
+        return propositionDao.findAll() as ArrayList<Proposition>?
+
+    }
 }
