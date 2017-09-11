@@ -7,6 +7,7 @@ import io.saagie.astonparking.domain.User
 import io.saagie.astonparking.slack.SlackBot
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -20,6 +21,7 @@ class DrawService(
 ) {
 
     @Async
+    @Scheduled(cron = "0 0 10 * * MON")
     fun attribution() {
         val sortedActiveUsers = sortAndFilterUsers()
         val availableSpots = spotService.getAllSpots(State.FREE)
