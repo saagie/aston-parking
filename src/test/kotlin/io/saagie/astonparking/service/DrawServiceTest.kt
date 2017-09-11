@@ -8,6 +8,7 @@ import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.domain.Spot
 import io.saagie.astonparking.domain.State
 import io.saagie.astonparking.domain.User
+import io.saagie.astonparking.slack.SlackBot
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldEqual
@@ -39,8 +40,11 @@ class DrawServiceTest {
     val propositionDao = mock<PropositionDao> {
 
     }
+    val slackBot = mock<SlackBot> {
 
-    val loterryService = DrawService(userService, spotService, emailService, propositionDao)
+    }
+
+    val loterryService = DrawService(userService, spotService, emailService, slackBot, propositionDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {

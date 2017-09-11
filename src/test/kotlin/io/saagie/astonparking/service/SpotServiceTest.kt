@@ -68,8 +68,8 @@ class SpotServiceTest {
         val returnedAllSpotsWithFreeUsingEnum = spotService.getAllSpots(State.FREE)
         // Then
         verify(spotDao, never()).findAll()
-        verify(spotDao, times(1)).findByState(State.FREE)
-        verify(spotDao, times(1)).findByState(State.FIXED)
+        verify(spotDao, times(2)).findByState(State.FREE)
+        verify(spotDao, times(2)).findByState(State.FIXED)
         returnedAllSpotsWithFixed `should equal` allSpots.filter { it.state == State.FIXED }
         returnedAllSpotsWithFixed `should equal` returnedAllSpotsWithFixedUsingEnum
         returnedAllSpotsWithFree `should equal` allSpots.filter { it.state == State.FREE }

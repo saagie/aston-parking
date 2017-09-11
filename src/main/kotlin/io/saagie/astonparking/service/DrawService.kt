@@ -4,6 +4,7 @@ import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.domain.State
 import io.saagie.astonparking.domain.User
+import io.saagie.astonparking.slack.SlackBot
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -13,6 +14,7 @@ class DrawService(
         @Autowired val userService: UserService,
         @Autowired val spotService: SpotService,
         @Autowired val emailService: EmailService,
+        @Autowired val slackBot: SlackBot,
         @Autowired val propositionDao: PropositionDao
 ) {
 
@@ -32,6 +34,7 @@ class DrawService(
         }
         propositionDao.save(propositions)
         emailService.proposition(propositions, sortedActiveUsers)
+        slackBot.proposition(propositions, sortedActiveUsers, nextMonday)
     }
 
     fun generateAllProposition(number: Int, id: String, nextMonday: LocalDate): List<Proposition> {
