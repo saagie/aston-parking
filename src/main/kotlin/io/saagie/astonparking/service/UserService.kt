@@ -39,9 +39,9 @@ class UserService(
             }
             if (!activatedUser) {
                 user.enable = true
+                emailService.profileCreated(user)
             }
             userDao.save(user)
-            emailService.profileCreated(user)
         }
     }
 

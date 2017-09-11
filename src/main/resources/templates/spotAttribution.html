@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head></head>
+<body>
+Hi <span th:text="${user.username}"/>, You've been selected for the next week. Here is your attribution :
+<br/>
+The spot : <strong><span th:text="${spotNumber}"/></strong> from <span th:text="${startDay}"/> to <span
+        th:text="${endDay}"/>
+
+<br/>
+You need to validate these attributions before next thursday on the website or on slack. If you not validate these
+propositions, your spot will be marked as free, and a new draw will take place next friday.
+<br/>
+<a th:href="${url}">Aston Parking</a>
+</body>
+</html>
