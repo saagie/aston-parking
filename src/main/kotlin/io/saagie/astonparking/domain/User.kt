@@ -16,7 +16,7 @@ data class User(
         var image_192: String? = null,
         var image_512: String? = null,
         var creationDate: Date = Date.from(Instant.now()),
-        val attribution: Int = 0,
+        var attribution: Int = 0,
         var enable: Boolean = false,
         var activated: Boolean = false
 ) {
@@ -26,5 +26,9 @@ data class User(
             !activated -> return "Not activated"
             else -> return "Hibernate"
         }
+    }
+
+    fun incrementAttribution() {
+        this.attribution = this.attribution + 1
     }
 }

@@ -8,7 +8,7 @@ logging:
 ## GENERAL
 url: "http://localhost:8080"
 # SLACK BOT
-slackBotToken: "xoxb-226954490176-Ni4j6r7HbG2q9Hi3oqIHGDPa"
+slackBotToken: "xoxb-226954490176-4CcvIamc6AMGTAMPXjYCWWnY"
 slackWebhookUrl: "https://hooks.slack.com/services/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"
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 # MAIL

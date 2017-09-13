@@ -71,8 +71,8 @@ class EmailService(
                 if (!propositionsForUser.isEmpty()) {
                     val messagePreparator = MimeMessagePreparator { mimeMessage ->
                         context.setVariable("spotNumber", propositionsForUser.first().spotNumber)
-                        context.setVariable("startDay", propositionsForUser.first().day.format(DateTimeFormatter.ISO_DATE))
-                        context.setVariable("endDay", propositionsForUser.last().day.format(DateTimeFormatter.ISO_DATE))
+                        context.setVariable("startDay", propositionsForUser.first().day.format(DateTimeFormatter.ofPattern("dd/MM")))
+                        context.setVariable("endDay", propositionsForUser.last().day.format(DateTimeFormatter.ofPattern("dd/MM")))
                         val messageHelper = MimeMessageHelper(mimeMessage)
                         messageHelper.setTo(user.email)
                         messageHelper.setSubject("Spot attribution - Hey you've been selected")

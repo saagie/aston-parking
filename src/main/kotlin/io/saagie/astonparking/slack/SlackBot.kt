@@ -2,6 +2,7 @@ package io.saagie.astonparking.slack
 
 
 import io.saagie.astonparking.domain.Proposition
+import io.saagie.astonparking.domain.Schedule
 import io.saagie.astonparking.domain.User
 import me.ramswaroop.jbot.core.slack.Bot
 import me.ramswaroop.jbot.core.slack.Controller
@@ -50,8 +51,8 @@ class SlackBot : Bot() {
     fun proposition(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>, nextMonday: LocalDate) {
 
         val message = Message("*******************\n")
-        message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ISO_DATE)} \n"
-        message.text += generateTextForSlack(propositions, sortedActiveUsers)
+        message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
+        message.text += generateTextForPropositions(propositions, sortedActiveUsers)
         message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
         message.text += "*******************"
         val restTemplate = RestTemplate()
@@ -62,21 +63,56 @@ class SlackBot : Bot() {
         }
     }
 
-    fun generateTextForSlack(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
-        val spotPerUser = propositions.associateBy(
-                keySelector = { prop -> prop.spotNumber },
-                valueTransform = { prop ->
-                    sortedActiveUsers.filter { it.id == prop.userId }.first()
-                })
-
+    fun generateTextForPropositions(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
         var message = ""
-        spotPerUser.forEach(
-                {
-                    message += ":parking: *${it.key}* :arrow_right: <@${it.value.id}|${it.value.username}>\n"
+        val mapText = hashMapOf<Int, ArrayList<Proposition>>()
+        propositions.forEach { proposition ->
+            run {
+                val listForSpotNumber = mapText.getOrDefault(proposition.spotNumber, arrayListOf())
+                listForSpotNumber.add(proposition)
+                mapText.put(proposition.spotNumber, listForSpotNumber)
+            }
+        }
+        val iterator = mapText.keys.iterator()
+        while (iterator.hasNext()) {
+            val spotNumber = iterator.next()
+            val listForSpotNumber = mapText.get(spotNumber)
+            val mapSpot = hashMapOf<String, ArrayList<LocalDate>>()
+            listForSpotNumber!!.forEach { proposition ->
+                run {
+                    val dates = mapSpot.getOrDefault(proposition.userId, arrayListOf())
+                    dates.add(proposition.day)
+                    mapSpot.put(proposition.userId, dates)
                 }
-        )
+            }
+            message += ":parking: *${spotNumber}* :arrow_right: "
+            val iteratorSpot = mapSpot.keys.iterator()
+            while (iteratorSpot.hasNext()) {
+                val userId = iteratorSpot.next()
+                val dates = mapSpot.get(userId)
+                message += " <@${userId}|${sortedActiveUsers.find { it.id == userId }!!.username}> [ "
+                dates!!.forEach { message += "${it.format(DateTimeFormatter.ofPattern("dd/MM"))} " }
+            }
+            message += "]\n"
+        }
         return message
     }
 
+    fun generateTextForSchedule(schedules: List<Schedule>): String {
+        var message = ""
+
+        schedules.forEach { schedule ->
+            run {
+                message += "${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} : "
+                schedule.spots.forEach({ spot ->
+                    run {
+                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.user.id}|${spot.user.id}> \n"
+                    }
+                })
+            }
+        }
+        message += "\n"
+        return message
+    }
 
 }

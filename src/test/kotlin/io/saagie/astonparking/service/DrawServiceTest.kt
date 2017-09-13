@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import io.saagie.astonparking.dao.PropositionDao
+import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.domain.Spot
 import io.saagie.astonparking.domain.State
@@ -40,11 +41,15 @@ class DrawServiceTest {
     val propositionDao = mock<PropositionDao> {
 
     }
+
+    val scheduleDao = mock<ScheduleDao> {
+
+    }
     val slackBot = mock<SlackBot> {
 
     }
 
-    val loterryService = DrawService(userService, spotService, emailService, slackBot, propositionDao)
+    val loterryService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {
