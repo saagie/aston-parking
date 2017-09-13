@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UserController(@Autowired val userService: UserService) {
+class UserController(@Autowired val userService: UserService) : SecurityController {
 
     @GetMapping("/profile")
     fun profile(principal: OAuth2Authentication): User {
@@ -27,9 +27,5 @@ class UserController(@Autowired val userService: UserService) {
         userService.changeStatus(id)
     }
 
-    private fun extractUserId(principal: OAuth2Authentication): String {
-        val map = principal.userAuthentication.principal as Map<*, *>
-        val id = map.get("id") as String
-        return id
-    }
+
 }

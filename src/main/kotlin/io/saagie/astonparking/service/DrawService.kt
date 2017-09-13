@@ -107,6 +107,7 @@ class DrawService(
                 propositionDao.delete(it.id)
                 user.incrementAttribution()
             }
+            userService.save(user)
             return true
         }
         return false

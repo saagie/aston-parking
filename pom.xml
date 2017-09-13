@@ -27,6 +27,9 @@
         <jackson-module-kotlin.version>2.9.0</jackson-module-kotlin.version>
         <kluent.version>1.15</kluent.version>
         <jbot.version>3.0.2</jbot.version>
+        <plugin.docker.imagePrefix>pierrecd</plugin.docker.imagePrefix>
+        <docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
+        <docker-maven-plugin.baseImage>java:8-jre</docker-maven-plugin.baseImage>
     </properties>
 
     <dependencies>
@@ -184,6 +187,28 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <configuration>
+                    <imageName>${plugin.docker.imagePrefix}/${project.artifactId}</imageName>
+                    <baseImage>${docker-maven-plugin.baseImage}</baseImage>
+                    <entryPoint>["java", "-jar", "/target/${project.build.finalName}.jar"]</entryPoint>
+                    <!-- copy the service's jar file from target into the root directory of the image -->
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                        <imageTag>latest</imageTag>
+                    </imageTags>
+                    <resources>
+                        <resource>
+                            <targetPath>/target</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>

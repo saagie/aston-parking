@@ -71,4 +71,8 @@ class UserService(
         emailService.profileStatusChange(user)
     }
 
+    fun save(user: User) {
+        userDao.save(user)
+    }
+
 }
