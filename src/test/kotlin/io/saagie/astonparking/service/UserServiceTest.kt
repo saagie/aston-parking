@@ -148,6 +148,16 @@ class UserServiceTest {
         userSaved.image_512 shouldEqual "image_512"
     }
 
+    @Test
+    fun should_save_user() {
+        //Given
+        //When
+        userService.save(allUser.first())
+        //Then
+        verify(userDao, times(1)).save(userCaptor.capture())
+        userCaptor.value shouldEqual allUser.first()
+    }
+
     private fun initAllUser(): List<User> {
         return arrayListOf<User>(
                 User(

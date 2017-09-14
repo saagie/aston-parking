@@ -65,4 +65,21 @@ class UserTest {
         //Then
         status shouldEqualTo "Not activated"
     }
+
+    @Test
+    fun should_increment_attribution() {
+        //Given
+        val user = User(
+                id = "ID1",
+                username = "Test User",
+                activated = false,
+                enable = true,
+                attribution = 0
+        )
+        //When
+        user.incrementAttribution()
+        //Then
+        user.attribution shouldEqualTo 1
+
+    }
 }

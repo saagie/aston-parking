@@ -5,12 +5,10 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.dao.ScheduleDao
-import io.saagie.astonparking.domain.Proposition
-import io.saagie.astonparking.domain.Spot
-import io.saagie.astonparking.domain.State
-import io.saagie.astonparking.domain.User
+import io.saagie.astonparking.domain.*
 import io.saagie.astonparking.slack.SlackBot
 import org.amshove.kluent.`it returns`
+import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
@@ -27,37 +25,42 @@ class DrawServiceTest {
 
     val allSpots = initAllSpots()
 
+    val allPropositions = initAllPropositions()
+
     val userService = mock<UserService> {
         on { getAllActive() } `it returns` allUsers
+        on { get(allUsers.first().id!!) } `it returns` allUsers.first()
     }
 
     val spotService = mock<SpotService> {
         on { getAllSpots(State.FREE) } `it returns` allSpots
 
     }
+
     val emailService = mock<EmailService> {
 
     }
     val propositionDao = mock<PropositionDao> {
-
+        on { findAll() } `it returns` allPropositions
     }
-
     val scheduleDao = mock<ScheduleDao> {
-
+        on { exists(LocalDate.now()) } `it returns` true
+        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), spots = arrayListOf())
     }
+
     val slackBot = mock<SlackBot> {
 
     }
 
-    val loterryService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao)
+    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {
         //Given
         //When
-        val users = loterryService.sortAndFilterUsers()
+        val users = drawService.sortAndFilterUsers()
         //Then
-        users.map { u -> u.attribution } shouldEqual listOf(1, 2, 3, 4)
+        users.map { u -> u.attribution } shouldEqual listOf(0, 2, 3, 4)
     }
 
     @Test
@@ -71,13 +74,13 @@ class DrawServiceTest {
         val d6 = LocalDate.parse("2017-09-09")
         val d7 = LocalDate.parse("2017-09-10")
         //When
-        val nextMonday1 = loterryService.getNextMonday(d1)
-        val nextMonday2 = loterryService.getNextMonday(d2)
-        val nextMonday3 = loterryService.getNextMonday(d3)
-        val nextMonday4 = loterryService.getNextMonday(d4)
-        val nextMonday5 = loterryService.getNextMonday(d5)
-        val nextMonday6 = loterryService.getNextMonday(d6)
-        val nextMonday7 = loterryService.getNextMonday(d7)
+        val nextMonday1 = drawService.getNextMonday(d1)
+        val nextMonday2 = drawService.getNextMonday(d2)
+        val nextMonday3 = drawService.getNextMonday(d3)
+        val nextMonday4 = drawService.getNextMonday(d4)
+        val nextMonday5 = drawService.getNextMonday(d5)
+        val nextMonday6 = drawService.getNextMonday(d6)
+        val nextMonday7 = drawService.getNextMonday(d7)
         //Then
         nextMonday1 `should equal` nextMonday2
         nextMonday1 `should equal` nextMonday3
@@ -99,13 +102,13 @@ class DrawServiceTest {
     }
 
     @Test
-    fun should_return_list_of_propositions() {
+    fun should_generate_list_of_propositions() {
         //Given
         val nextMonday = LocalDate.parse("2017-09-11")
         val id = "ID"
         val number = 1
         //When
-        val generateAllProposition = loterryService.generateAllProposition(number = number, id = id, nextMonday = nextMonday)
+        val generateAllProposition = drawService.generateAllProposition(number = number, id = id, nextMonday = nextMonday)
         //Then
         generateAllProposition.size `should equal` 5
         generateAllProposition.map { it.day } `should equal` (
@@ -123,10 +126,31 @@ class DrawServiceTest {
     fun should_make_attributions() {
         //Given
         //When
-        loterryService.attribution()
+        drawService.attribution()
         //Then
         verify(propositionDao, times(1)).save(Mockito.anyListOf(Proposition::class.java))
         verify(emailService, times(1)).proposition(Mockito.anyListOf(Proposition::class.java), Mockito.anyListOf(User::class.java))
+    }
+
+    @Test
+    fun should_return_all_propositions() {
+        //Given
+        //When
+        val propositions = drawService.getAllPropositions()
+        //Then
+        verify(propositionDao, times(1)).findAll()
+        propositions shouldEqual allPropositions
+    }
+
+    @Test
+    fun should_accept_propositions() {
+        //Given
+        //When
+        val response = drawService.acceptProposition(allUsers.first().id!!)
+        //Then
+        response `should be` true
+        verify(scheduleDao, times(2)).save(Mockito.any(Schedule::class.java))
+        verify(propositionDao, times(2)).delete(Mockito.anyString())
     }
 
     private fun initAllUser(): List<User> {
@@ -136,7 +160,7 @@ class DrawServiceTest {
                         username = "User1",
                         email = "mail1@mail.com",
                         creationDate = Date.from(Instant.now()),
-                        attribution = 1,
+                        attribution = 0,
                         enable = true,
                         activated = true),
                 User(
@@ -167,10 +191,18 @@ class DrawServiceTest {
     }
 
     private fun initAllSpots(): List<Spot> {
-        return listOf<Spot>(
+        return listOf(
                 Spot(id = "SPOT0", number = 100, state = State.FREE),
                 Spot(id = "SPOT1", number = 101, state = State.FREE),
                 Spot(id = "SPOT2", number = 102, state = State.FREE)
+        )
+    }
+
+    private fun initAllPropositions(): ArrayList<Proposition> {
+        return arrayListOf(
+                Proposition(id = "PID1", userId = allUsers.get(0).id!!, spotNumber = allSpots.get(0).number, day = LocalDate.now()),
+                Proposition(id = "PID2", userId = allUsers.get(0).id!!, spotNumber = allSpots.get(1).number, day = LocalDate.now()),
+                Proposition(id = "PID3", userId = allUsers.get(1).id!!, spotNumber = allSpots.get(2).number, day = LocalDate.now())
         )
     }
 }
