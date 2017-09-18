@@ -3,10 +3,7 @@ package io.saagie.astonparking.service
 import com.nhaarman.mockito_kotlin.*
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
-import org.amshove.kluent.`should be`
-import org.amshove.kluent.`should equal`
-import org.amshove.kluent.`should not equal`
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.*
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import java.time.Instant
@@ -146,6 +143,27 @@ class UserServiceTest {
         userSaved.image_72 shouldEqual "image_72"
         userSaved.image_192 shouldEqual "image_192"
         userSaved.image_512 shouldEqual "image_512"
+    }
+
+    @Test
+    fun should_save_user() {
+        //Given
+        //When
+        userService.save(allUser.first())
+        //Then
+        verify(userDao, times(1)).save(userCaptor.capture())
+        userCaptor.value shouldEqual allUser.first()
+    }
+
+    @Test
+    fun should_reset_already_selected() {
+        //Given
+        //When
+        userService.resetAllSelectedAttribution()
+        //Then
+        verify(userDao, times(1)).findAll()
+        verify(userDao, times(allUser.size)).save(userCaptor.capture())
+        userCaptor.allValues.map { it.alreadySelected } `should contain` false
     }
 
     private fun initAllUser(): List<User> {

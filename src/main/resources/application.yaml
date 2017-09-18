@@ -6,19 +6,39 @@ logging:
     io.saagie: WARN
     me.ramswaroop.jbot: WARN
 ## GENERAL
-url: "http://localhost:8080"
+url: ${ASTON_PARKING_URL}
 # SLACK BOT
-slackBotToken: "xoxb-226954490176-Ni4j6r7HbG2q9Hi3oqIHGDPa"
-slashCommandToken: "RIJgcauY2CERZRZwvuELq2Y6"
+slackBotToken: ${ASTON_PARKING_SLACKBOT_TOKEN}
+slackWebhookUrl: ${ASTON_PARKING_SLACK_WEBHOOK_URL}
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 # MAIL
-
+sendEmail: false
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${ASTON_PARKING_MAIL_USERNAME}
+    password: ${ASTON_PARKING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+# MONGO
+  data:
+    mongodb:
+      uri: mongodb://${ASTON_PARKING_MONGO_URI}
 ##########################
 # SECURITY
 slack:
   client:
-    clientId: "225187789888.225193189936"
-    clientSecret: "5104fde84aaf467439cdd820dea14c7e"
+    clientId: ${ASTON_PARKING_CLIENTID}
+    clientSecret: ${ASTON_PARKING_CLIENTSECRET}
     accessTokenUri: https://slack.com/api/oauth.access
     userAuthorizationUri: https://slack.com/oauth/authorize
     tokenName: token

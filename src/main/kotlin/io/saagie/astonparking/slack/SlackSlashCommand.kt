@@ -1,7 +1,9 @@
 package io.saagie.astonparking.slack
 
+import io.saagie.astonparking.service.DrawService
 import io.saagie.astonparking.service.UserService
 import me.ramswaroop.jbot.core.slack.models.Attachment
+import me.ramswaroop.jbot.core.slack.models.Message
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -13,7 +15,11 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-class SlackSlashCommand(@Autowired val userService: UserService) {
+class SlackSlashCommand(
+        @Autowired val userService: UserService,
+        @Autowired val drawService: DrawService,
+        @Autowired val slackBot: SlackBot
+) {
 
     @Value("\${url}")
     private val url: String? = null
@@ -41,6 +47,9 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
                 },
                 Attachment().apply {
                     setText("/profile : to display your AstonParking profile")
+                },
+                Attachment().apply {
+                    setText("/attribution : to display attribution for the current and the next week")
                 },
                 Attachment().apply {
                     setText("/inactive-profile : to disable your AstonParking profile")
@@ -95,7 +104,7 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
                                       @RequestParam("command") command: String,
                                       @RequestParam("text") text: String,
                                       @RequestParam("response_url") responseUrl: String): RichMessage {
-        val registerUser = userService.changeStatus(userId, true)
+        userService.changeStatus(userId, true)
         val richMessage = RichMessage("Activate Profile : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
         attachments[0] = Attachment()
@@ -118,7 +127,7 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
                                         @RequestParam("command") command: String,
                                         @RequestParam("text") text: String,
                                         @RequestParam("response_url") responseUrl: String): RichMessage {
-        val registerUser = userService.changeStatus(userId, false)
+        userService.changeStatus(userId, false)
         val richMessage = RichMessage("Desactivate Profile : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
         attachments[0] = Attachment()
@@ -174,5 +183,83 @@ class SlackSlashCommand(@Autowired val userService: UserService) {
             return richMessage.encodedMessage()
         }
 
+    }
+
+    @RequestMapping(value = "/slack/attribution",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveAttributionCommand(@RequestParam("token") token: String,
+                                    @RequestParam("team_id") teamId: String,
+                                    @RequestParam("team_domain") teamDomain: String,
+                                    @RequestParam("channel_id") channelId: String,
+                                    @RequestParam("channel_name") channelName: String,
+                                    @RequestParam("user_id") userId: String,
+                                    @RequestParam("user_name") userName: String,
+                                    @RequestParam("command") command: String,
+                                    @RequestParam("text") text: String,
+                                    @RequestParam("response_url") responseUrl: String): Message {
+
+        val propositions = drawService.getAllPropositions()
+        val currentSchedules = drawService.getCurrentSchedules()
+        val nextSchedules = drawService.getNextSchedules()
+        val users = userService.getAll()
+
+        val message = Message("*******************\n")
+        message.text += slackBot.generateTextForSchedule(currentSchedules)
+        message.text += "*******************\n"
+        message.text += "*Next week\n\n"
+        message.text += "_Not accepted yet_\n"
+        message.text += slackBot.generateTextForPropositions(propositions!!, users)
+        message.text += "\n_Accepted_\n"
+        message.text += slackBot.generateTextForSchedule(nextSchedules)
+        message.text += "*******************\n"
+
+
+        return message
+    }
+
+
+    @RequestMapping(value = "/slack/accept",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveAcceptCommand(@RequestParam("token") token: String,
+                               @RequestParam("team_id") teamId: String,
+                               @RequestParam("team_domain") teamDomain: String,
+                               @RequestParam("channel_id") channelId: String,
+                               @RequestParam("channel_name") channelName: String,
+                               @RequestParam("user_id") userId: String,
+                               @RequestParam("user_name") userName: String,
+                               @RequestParam("command") command: String,
+                               @RequestParam("text") text: String,
+                               @RequestParam("response_url") responseUrl: String): Message {
+
+
+        val message = Message("OK, your propositions are accepted.")
+        if (!drawService.acceptProposition(userId)) {
+            message.text = "You have no proposition for the next week."
+        }
+
+        return message
+    }
+
+    @RequestMapping(value = "/slack/decline",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveDeclineCommand(@RequestParam("token") token: String,
+                                @RequestParam("team_id") teamId: String,
+                                @RequestParam("team_domain") teamDomain: String,
+                                @RequestParam("channel_id") channelId: String,
+                                @RequestParam("channel_name") channelName: String,
+                                @RequestParam("user_id") userId: String,
+                                @RequestParam("user_name") userName: String,
+                                @RequestParam("command") command: String,
+                                @RequestParam("text") text: String,
+                                @RequestParam("response_url") responseUrl: String): Message {
+
+
+        drawService.declineProposition(userId)
+
+        val message = Message("You've declined all your propositions")
+        return message
     }
 }

@@ -10,6 +10,10 @@ import java.lang.IllegalArgumentException
 @Service
 class SpotService(@Autowired val spotDao: SpotDao) {
 
+    fun getAllSpots(state: State): List<Spot>? {
+        return getAllSpots(state.name)
+    }
+
     fun getAllSpots(state: String?): List<Spot>? {
         when (state) {
             State.FIXED.name, State.FREE.name -> return spotDao.findByState(State.valueOf(state))
