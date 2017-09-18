@@ -4,6 +4,7 @@ import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.function.Consumer
 
 
 @Service
@@ -73,6 +74,15 @@ class UserService(
 
     fun save(user: User) {
         userDao.save(user)
+    }
+
+    fun resetAllSelectedAttribution() {
+        userDao.findAll()
+                .forEach(
+                        Consumer {
+                            it.alreadySelected = false
+                            userDao.save(it)
+                        })
     }
 
 }

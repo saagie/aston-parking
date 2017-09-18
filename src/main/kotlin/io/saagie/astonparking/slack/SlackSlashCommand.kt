@@ -259,7 +259,7 @@ class SlackSlashCommand(
 
         drawService.declineProposition(userId)
 
-        val message = Message("")
+        val message = Message("You've declined all your propositions")
         return message
     }
 }

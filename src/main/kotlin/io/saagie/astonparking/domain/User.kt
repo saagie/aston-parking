@@ -18,7 +18,8 @@ data class User(
         var creationDate: Date = Date.from(Instant.now()),
         var attribution: Int = 0,
         var enable: Boolean = false,
-        var activated: Boolean = false
+        var activated: Boolean = false,
+        var alreadySelected: Boolean = false
 ) {
     fun status(): String {
         when {

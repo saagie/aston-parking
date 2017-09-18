@@ -21,8 +21,14 @@ class DrawService(
         @Autowired val scheduleDao: ScheduleDao
 ) {
 
-    @Async
     @Scheduled(cron = "0 0 10 * * MON")
+    fun scheduleAttribution() {
+        userService.resetAllSelectedAttribution()
+        propositionDao.deleteAll()
+        this.attribution()
+    }
+
+    @Async
     fun attribution() {
         val sortedActiveUsers = sortAndFilterUsers()
         val nextMonday = getNextMonday(LocalDate.now())
@@ -34,7 +40,8 @@ class DrawService(
             if (userIterator.hasNext()) {
                 val user = userIterator.next()
                 propositions.addAll(generateAllProposition(it.number, user.id!!, nextMonday))
-
+                user.alreadySelected = true
+                userService.save(user)
             }
         }
         propositionDao.save(propositions)
@@ -42,7 +49,7 @@ class DrawService(
         slackBot.proposition(propositions, sortedActiveUsers, nextMonday)
     }
 
-    fun generateAllProposition(number: Int, id: String, nextMonday: LocalDate): List<Proposition> {
+    fun generateAllProposition(number: Int, userId: String, nextMonday: LocalDate): List<Proposition> {
         val listProps = arrayListOf<Proposition>()
         for (i in 0L..4L) {
             if (!spotAlreadyProposed(number, nextMonday.plusDays(i)) &&
@@ -50,7 +57,7 @@ class DrawService(
                 listProps.add(
                         Proposition(
                                 spotNumber = number,
-                                userId = id,
+                                userId = userId,
                                 day = nextMonday.plusDays(i)
                         ))
             }
@@ -76,6 +83,7 @@ class DrawService(
     fun sortAndFilterUsers(): List<User> {
         return userService
                 .getAllActive()
+                .filter { it.alreadySelected == false }
                 .sortedBy { it.attribution }
     }
 
@@ -89,30 +97,36 @@ class DrawService(
         val user = userService.get(userId)
         val filteredProposition = propositions.filter { it.userId == userId }
         if (filteredProposition.isNotEmpty()) {
-            filteredProposition.forEach {
-                var schedule = Schedule(
-                        date = it.day,
-                        spots = arrayListOf()
-                )
-                if (scheduleDao.exists(it.day)) {
-                    schedule = scheduleDao.findOne(it.day)
-                }
-                schedule.spots.add(
-                        ScheduleSpot(
-                                spotNumber = it.spotNumber,
-                                user = user,
-                                acceptDate = LocalDateTime.now())
-                )
-                scheduleDao.save(schedule)
-                propositionDao.delete(it.id)
-                user.incrementAttribution()
-            }
-            userService.save(user)
+            acceptAllPropositions(filteredProposition, user)
             return true
         }
         return false
     }
 
+    @Async
+    fun acceptAllPropositions(filteredProposition: List<Proposition>, user: User) {
+        filteredProposition.forEach {
+            var schedule = Schedule(
+                    date = it.day,
+                    spots = arrayListOf()
+            )
+            if (scheduleDao.exists(it.day)) {
+                schedule = scheduleDao.findOne(it.day)
+            }
+            schedule.spots.add(
+                    ScheduleSpot(
+                            spotNumber = it.spotNumber,
+                            user = user,
+                            acceptDate = LocalDateTime.now())
+            )
+            scheduleDao.save(schedule)
+            propositionDao.delete(it.id)
+            user.incrementAttribution()
+        }
+        userService.save(user)
+    }
+
+    @Async
     fun declineProposition(userId: String) {
         val propositions = propositionDao.findAll()
         val props = propositions.filter { it.userId == userId }

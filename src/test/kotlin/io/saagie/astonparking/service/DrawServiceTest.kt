@@ -108,7 +108,7 @@ class DrawServiceTest {
         val id = "ID"
         val number = 1
         //When
-        val generateAllProposition = drawService.generateAllProposition(number = number, id = id, nextMonday = nextMonday)
+        val generateAllProposition = drawService.generateAllProposition(number = number, userId = id, nextMonday = nextMonday)
         //Then
         generateAllProposition.size `should equal` 5
         generateAllProposition.map { it.day } `should equal` (
