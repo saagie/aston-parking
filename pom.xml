@@ -192,6 +192,15 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>${docker-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-docker</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <imageName>${plugin.docker.imagePrefix}/${project.artifactId}</imageName>
                     <baseImage>${docker-maven-plugin.baseImage}</baseImage>
