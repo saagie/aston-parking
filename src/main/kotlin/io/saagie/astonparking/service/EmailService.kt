@@ -93,6 +93,23 @@ class EmailService(
 
     }
 
+    @Async
+    fun propositionRemote(proposition: Proposition, selectedUser: User) {
+        val context = Context()
+        context.setVariable("url", url)
+        val messagePreparator = MimeMessagePreparator { mimeMessage ->
+            val messageHelper = MimeMessageHelper(mimeMessage)
+            messageHelper.setTo(selectedUser.email)
+            context.setVariable("spotNumber", proposition.spotNumber)
+            context.setVariable("user", selectedUser)
+            context.setVariable("day", proposition.day.format(DateTimeFormatter.ofPattern("dd/MM")))
+            messageHelper.setSubject("Spot attribution - A free spot is for you")
+            messageHelper.setText(templateEngine.process("remoteAttribution", context), true)
+        }
+        send(messagePreparator)
+
+    }
+
     private fun send(messagePreparator: MimeMessagePreparator) {
         try {
             if (sendEmail) {

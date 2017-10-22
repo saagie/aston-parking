@@ -262,4 +262,25 @@ class SlackSlashCommand(
         val message = Message("You've declined all your propositions")
         return message
     }
+
+    @RequestMapping(value = "/slack/release",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveReleaseCommand(@RequestParam("token") token: String,
+                                @RequestParam("team_id") teamId: String,
+                                @RequestParam("team_domain") teamDomain: String,
+                                @RequestParam("channel_id") channelId: String,
+                                @RequestParam("channel_name") channelName: String,
+                                @RequestParam("user_id") userId: String,
+                                @RequestParam("user_name") userName: String,
+                                @RequestParam("command") command: String,
+                                @RequestParam("text") text: String,
+                                @RequestParam("response_url") responseUrl: String): Message {
+
+        drawService.release(userId, text)
+
+        val message = Message("You have release the spot for the day (${text}) and it will be reaffected to another. Thanks.")
+        return message
+
+    }
 }

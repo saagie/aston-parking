@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.socket.WebSocketSession
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @Component
@@ -53,6 +54,20 @@ class SlackBot : Bot() {
         val message = Message("*******************\n")
         message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
         message.text += generateTextForPropositions(propositions, sortedActiveUsers)
+        message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
+        message.text += "*******************"
+        val restTemplate = RestTemplate()
+        try {
+            restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
+        } catch (e: RestClientException) {
+            logger.error("Error posting to Slack Incoming Webhook: ", e)
+        }
+    }
+
+    fun propositionRemote(proposition: Proposition, selectedUser: User) {
+        val message = Message("*******************\n")
+        message.text += "After a release declared, a new draw is done"
+        message.text += generateTextForPropositions(arrayListOf(proposition), arrayListOf(selectedUser))
         message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
         message.text += "*******************"
         val restTemplate = RestTemplate()
@@ -106,7 +121,7 @@ class SlackBot : Bot() {
                 message += "${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} : "
                 schedule.spots.forEach({ spot ->
                     run {
-                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.user.id}|${spot.user.id}> \n"
+                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.username}|${spot.userId}> \n"
                     }
                 })
             }
