@@ -44,6 +44,6 @@ slack:
     tokenName: token
     authenticationScheme: query
     clientAuthenticationScheme: form
-    scope: identity.basic
+    scope: identity.basic,identity.email,identity.avatar,identity.team
   resource:
     userInfoUri: https://slack.com/api/users.identity?token=
