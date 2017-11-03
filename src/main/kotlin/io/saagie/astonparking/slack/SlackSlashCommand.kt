@@ -92,7 +92,7 @@ class SlackSlashCommand(
         attachments[0] = Attachment()
         attachments[0]!!.setText("Welcome on Aston Parking ${userName}. Please log in on the website : ${url} to complete your registration.")
         if (!registerUser) {
-            attachments[0]!!.setText("You are already registred on AstonParking. Use /profile to see your profile.")
+            attachments[0]!!.setText("You are already registred on AstonParking. Use /ap-profile to see your profile.")
         }
         richMessage.attachments = attachments
 
@@ -188,7 +188,7 @@ class SlackSlashCommand(
 
             return richMessage.encodedMessage()
         } catch (e: Exception) {
-            val richMessage = RichMessage("The profile : ${userName} doesn't exist. Type /register to create your profile.")
+            val richMessage = RichMessage("The profile : ${userName} doesn't exist. Type /ap-register to create your profile.")
             return richMessage.encodedMessage()
         }
 
