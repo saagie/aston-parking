@@ -10,6 +10,6 @@ after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     mvn docker:build;
-    docker push saagie/aston-parking:1.0.0-SNAPSHOT;
+    docker push saagie/aston-parking:1.0.1-SNAPSHOT;
     docker push saagie/aston-parking:latest;
     fi
