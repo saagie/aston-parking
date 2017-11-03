@@ -74,7 +74,7 @@ class DrawService(
 
     private fun spotAlreadySchedule(number: Int, date: LocalDate): Boolean {
         val schedule = scheduleDao.findOne(date)
-        return schedule != null && schedule.spots.filter { it.spotNumber == number }.isNotEmpty()
+        return schedule != null && schedule.assignedSpots.filter { it.spotNumber == number }.isNotEmpty()
 
     }
 
@@ -109,14 +109,15 @@ class DrawService(
         filteredProposition.forEach {
             var schedule = Schedule(
                     date = it.day,
-                    spots = arrayListOf(),
+                    assignedSpots = arrayListOf(),
+                    freeSpots = arrayListOf(),
                     userSelected = arrayListOf()
             )
             if (scheduleDao.exists(it.day)) {
                 schedule = scheduleDao.findOne(it.day)
             }
             schedule.userSelected.add(user.id!!)
-            schedule.spots.add(
+            schedule.assignedSpots.add(
                     ScheduleSpot(
                             spotNumber = it.spotNumber,
                             userId = user.id!!,
@@ -152,16 +153,17 @@ class DrawService(
 
     @Async
     fun release(userId: String, text: String) {
-        val date = LocalDate.parse(text + "/${LocalDate.now().year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        val now = LocalDate.now()
+        val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        if (now.isAfter(date)) {
+            throw IllegalArgumentException("Date can't be before today")
+        }
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
-        val spotToBeDeleted = schedule.spots.filter { it.userId == userId }
-        schedule.spots.removeAll(spotToBeDeleted)
-        if (schedule.spots.isEmpty()) {
-            scheduleDao.delete(schedule)
-        } else {
-            scheduleDao.save(schedule)
-        }
+        val spotToBeDeleted = schedule.assignedSpots.filter { it.userId == userId }
+        schedule.assignedSpots.removeAll(spotToBeDeleted)
+        schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
+        scheduleDao.save(schedule)
         user.attribution = user.attribution - 1
         userService.save(user)
     }

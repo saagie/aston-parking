@@ -45,7 +45,7 @@ class DrawServiceTest {
     }
     val scheduleDao = mock<ScheduleDao> {
         on { exists(LocalDate.now()) } `it returns` true
-        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), spots = arrayListOf(), userSelected = arrayListOf())
+        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), assignedSpots = arrayListOf(), userSelected = arrayListOf(), freeSpots = arrayListOf())
     }
 
     val slackBot = mock<SlackBot> {
@@ -206,27 +206,4 @@ class DrawServiceTest {
         )
     }
 
-
-    @Test
-    fun test() {
-        val schedules = arrayListOf<Schedule>(Schedule(
-                date = drawService.getNextMonday(LocalDate.now()),
-                spots = arrayListOf(),
-                userSelected = arrayListOf(
-                        "U1",
-                        "U2",
-                        "U3"
-                )
-        ),
-                Schedule(
-                        date = drawService.getNextMonday(LocalDate.now().plusDays(1)),
-                        spots = arrayListOf(),
-                        userSelected = arrayListOf(
-                                "U1",
-                                "U4"
-                        )
-                ))
-        val userselected = schedules.flatMap { it.userSelected }.distinct()
-        println(userselected)
-    }
 }

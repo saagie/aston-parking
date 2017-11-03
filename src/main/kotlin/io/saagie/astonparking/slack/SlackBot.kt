@@ -64,20 +64,6 @@ class SlackBot : Bot() {
         }
     }
 
-    fun propositionRemote(proposition: Proposition, selectedUser: User) {
-        val message = Message("*******************\n")
-        message.text += "After a release declared, a new draw is done"
-        message.text += generateTextForPropositions(arrayListOf(proposition), arrayListOf(selectedUser))
-        message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
-        message.text += "*******************"
-        val restTemplate = RestTemplate()
-        try {
-            restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
-        } catch (e: RestClientException) {
-            logger.error("Error posting to Slack Incoming Webhook: ", e)
-        }
-    }
-
     fun generateTextForPropositions(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
         var message = ""
         val mapText = hashMapOf<Int, ArrayList<Proposition>>()
@@ -119,9 +105,14 @@ class SlackBot : Bot() {
         schedules.forEach { schedule ->
             run {
                 message += "${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} : "
-                schedule.spots.forEach({ spot ->
+                schedule.assignedSpots.forEach({ spot ->
                     run {
-                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.username}|${spot.userId}> \n"
+                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
+                    }
+                })
+                schedule.freeSpots.forEach({ spotNumber ->
+                    run {
+                        message += ":parking: ${spotNumber} :arrow_right: FREE :desert_island: \n"
                     }
                 })
             }
