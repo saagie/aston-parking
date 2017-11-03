@@ -45,7 +45,7 @@ class SlackBot : Bot() {
         reply(session, event, Message(
                 """Hi, I am ${slackService.currentUser.name}
                     |You can interact with me using commands.
-                    |To have all available commands, type : /command
+                    |To have all available commands, type : /ap-command
                 """.trimMargin()))
     }
 
@@ -54,7 +54,7 @@ class SlackBot : Bot() {
         val message = Message("*******************\n")
         message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
         message.text += generateTextForPropositions(propositions, sortedActiveUsers)
-        message.text += "\nYou can see attributions for the current and the next week by using the command /attribution\n"
+        message.text += "\nYou can see attributions for the current and the next week by using the command /ap-attribution\n"
         message.text += "*******************"
         val restTemplate = RestTemplate()
         try {
