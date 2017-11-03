@@ -1,35 +1,119 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<!--[if lt IE 8 ]>
+<html class="no-js ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>
+<html class="no-js ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 8)|!(IE)]><!-->
+<html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Demo</title>
-    <meta name="description" content=""/>
-    <meta name="viewport" content="width=device-width"/>
-    <base href="/"/>
-    <link rel="stylesheet" type="text/css"
-          href="/webjars/bootstrap/css/bootstrap.min.css"/>
-    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-</head>
-<body ng-app="app" ng-controller="home as home">
-<h1>Login</h1>
-<div class="container" ng-show="!home.authenticated">
-    <div>
-        With Slack: <a href="/login/slack"><img src="https://platform.slack-edge.com/img/sign_in_with_slack.png"
-                                                srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"/>
-    </a>
-    </div>
-</div>
-<div class="container" ng-show="home.authenticated">
-    Logged in as: <img ng-src="{{home.avatar}}"/><span ng-bind="home.user"></span>(<span ng-bind="home.email"></span>)
 
-    <div>
-        <button ng-click="home.logout()" class="btn btn-primary">Logout</button>
+    <!--- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>Aston Parking</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+    ================================================== -->
+    <link rel="stylesheet" href="css/default.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/media-queries.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <!-- Script
+    ================================================== -->
+    <script src="js/modernizr.js"></script>
+
+    <!-- Favicons
+     ================================================== -->
+    <link rel="shortcut icon" href="favicon.ico">
+
+</head>
+
+<body ng-app="app" ng-controller="home as home">
+
+<!-- Header
+================================================== -->
+<header id="home">
+
+    <nav id="nav-wrap">
+
+        <a class="mobile-btn" href="#nav-wrap" title="Show navigation">Show navigation</a>
+        <a class="mobile-btn" href="#" title="Hide navigation">Hide navigation</a>
+
+
+    </nav> <!-- end #nav-wrap -->
+
+    <div class="row banner">
+        <div class="banner-text">
+            <h1 class="responsive-headline">Aston Parking</h1>
+            <h3>Aston Parking is an application which allows to distribute fairly the available parking spots every
+                week.</h3>
+            <a ng-show="!home.authenticated" href="/login/slack"><img
+                    src="https://platform.slack-edge.com/img/sign_in_with_slack.png"
+                    srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"/></a>
+
+
+            <hr/>
+            <div ng-show="home.authenticated">
+
+                <h3>Logged in as: <img ng-src="{{home.avatar}}"/></h3>
+                <h3>
+                    <p>
+                        <span ng-bind="home.user"></span>(<span ng-bind="home.email"></span>)
+                    </p>
+                </h3>
+            </div>
+        </div>
+
     </div>
-</div>
-<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+</header> <!-- Header End -->
+
+
+<!-- footer
+================================================== -->
+<footer>
+
+    <div class="row">
+
+        <div class="twelve columns">
+
+            <ul class="copyright">
+                <li>&copy; Copyright 2017 Saagie</li>
+                <li>Made with &hearts; at Rouen (<a href="https://github.com/saagie/aston-parking">Saagie</a>)</li>
+            </ul>
+
+        </div>
+
+
+    </div>
+
+</footer> <!-- Footer End-->
+
+<!-- Java Script
+================================================== -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery-1.10.2.min.js"><\/script>')</script>
+<script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
+
+<script src="js/jquery.flexslider.js"></script>
+<script src="js/waypoints.js"></script>
+<script src="js/jquery.fittext.js"></script>
+<script src="js/magnific-popup.js"></script>
+
+<script src="js/init.js"></script>
+
+<base href="/"/>
+<link rel="stylesheet" type="text/css"
+      href="css/bootstrap.min.css"/>
+<script type="text/javascript"
+        src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript">
     angular
         .module("app", [])
@@ -58,5 +142,7 @@
         };
     });
 </script>
+
 </body>
+
 </html>
