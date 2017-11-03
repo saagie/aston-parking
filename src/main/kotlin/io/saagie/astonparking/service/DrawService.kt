@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Service
 class DrawService(
@@ -30,7 +32,7 @@ class DrawService(
 
     @Async
     fun attribution() {
-        val sortedActiveUsers = sortAndFilterUsers()
+        val sortedActiveUsers = sortAndFilterUsers().filter { it.alreadySelected == false }
         val nextMonday = getNextMonday(LocalDate.now())
         val availableSpots = spotService.getAllSpots(State.FREE)
 
@@ -72,7 +74,7 @@ class DrawService(
 
     private fun spotAlreadySchedule(number: Int, date: LocalDate): Boolean {
         val schedule = scheduleDao.findOne(date)
-        return schedule != null && schedule.spots.filter { it.spotNumber == number }.isNotEmpty()
+        return schedule != null && schedule.assignedSpots.filter { it.spotNumber == number }.isNotEmpty()
 
     }
 
@@ -83,7 +85,6 @@ class DrawService(
     fun sortAndFilterUsers(): List<User> {
         return userService
                 .getAllActive()
-                .filter { it.alreadySelected == false }
                 .sortedBy { it.attribution }
     }
 
@@ -108,15 +109,19 @@ class DrawService(
         filteredProposition.forEach {
             var schedule = Schedule(
                     date = it.day,
-                    spots = arrayListOf()
+                    assignedSpots = arrayListOf(),
+                    freeSpots = arrayListOf(),
+                    userSelected = arrayListOf()
             )
             if (scheduleDao.exists(it.day)) {
                 schedule = scheduleDao.findOne(it.day)
             }
-            schedule.spots.add(
+            schedule.userSelected.add(user.id!!)
+            schedule.assignedSpots.add(
                     ScheduleSpot(
                             spotNumber = it.spotNumber,
-                            user = user,
+                            userId = user.id!!,
+                            username = user.username,
                             acceptDate = LocalDateTime.now())
             )
             scheduleDao.save(schedule)
@@ -135,12 +140,31 @@ class DrawService(
     }
 
     fun getCurrentSchedules(): List<Schedule> {
-        val currentMonday = this.getNextMonday(java.time.LocalDate.now()).minusDays(7)
-        return scheduleDao.findByDateIn(listOf(currentMonday, currentMonday.plusDays(1), currentMonday.plusDays(2), currentMonday.plusDays(3), currentMonday.plusDays(4)))
+        return getSchedules(this.getNextMonday(java.time.LocalDate.now()).minusDays(7))
     }
 
     fun getNextSchedules(): List<Schedule> {
-        val nextMonday = this.getNextMonday(java.time.LocalDate.now())
-        return scheduleDao.findByDateIn(listOf(nextMonday, nextMonday.plusDays(1), nextMonday.plusDays(2), nextMonday.plusDays(3), nextMonday.plusDays(4)))
+        return getSchedules(this.getNextMonday(java.time.LocalDate.now()))
+    }
+
+    fun getSchedules(date: LocalDate): List<Schedule> {
+        return scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
+    }
+
+    @Async
+    fun release(userId: String, text: String) {
+        val now = LocalDate.now()
+        val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        if (now.isAfter(date)) {
+            throw IllegalArgumentException("Date can't be before today")
+        }
+        val user = userService.get(userId)
+        val schedule = scheduleDao.findByDate(date)
+        val spotToBeDeleted = schedule.assignedSpots.filter { it.userId == userId }
+        schedule.assignedSpots.removeAll(spotToBeDeleted)
+        schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
+        scheduleDao.save(schedule)
+        user.attribution = user.attribution - 1
+        userService.save(user)
     }
 }

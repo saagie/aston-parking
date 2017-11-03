@@ -8,4 +8,5 @@ import java.time.LocalDate
 @Repository
 interface ScheduleDao : MongoRepository<Schedule, LocalDate> {
     fun findByDateIn(dates: List<LocalDate>): List<Schedule>
+    fun findByDate(date: LocalDate): Schedule
 }

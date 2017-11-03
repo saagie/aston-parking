@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.socket.WebSocketSession
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @Component
@@ -104,9 +105,14 @@ class SlackBot : Bot() {
         schedules.forEach { schedule ->
             run {
                 message += "${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} : "
-                schedule.spots.forEach({ spot ->
+                schedule.assignedSpots.forEach({ spot ->
                     run {
-                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.user.id}|${spot.user.id}> \n"
+                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
+                    }
+                })
+                schedule.freeSpots.forEach({ spotNumber ->
+                    run {
+                        message += ":parking: ${spotNumber} :arrow_right: FREE :desert_island: \n"
                     }
                 })
             }

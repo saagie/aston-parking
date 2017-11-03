@@ -12,7 +12,7 @@ slackBotToken: ${ASTON_PARKING_SLACKBOT_TOKEN}
 slackWebhookUrl: ${ASTON_PARKING_SLACK_WEBHOOK_URL}
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 # MAIL
-sendEmail: false
+sendEmail: true
 spring:
   mail:
     host: smtp.gmail.com

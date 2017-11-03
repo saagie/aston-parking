@@ -40,22 +40,31 @@ class SlackSlashCommand(
         val richMessage = RichMessage("---Aston Parking : Available commands--- ")
         val attachments = arrayOf(
                 Attachment().apply {
-                    setText("/command : this list of all available commands")
+                    setText("/ap-command : this list of all available commands")
                 },
                 Attachment().apply {
-                    setText("/register : to register you as a new member of Aston Parking")
+                    setText("/ap-register : to register you as a new member of Aston Parking")
                 },
                 Attachment().apply {
-                    setText("/profile : to display your AstonParking profile")
+                    setText("/ap-profile : to display your AstonParking profile")
                 },
                 Attachment().apply {
-                    setText("/attribution : to display attribution for the current and the next week")
+                    setText("/ap-attribution : to display attribution for the current and the next week")
                 },
                 Attachment().apply {
-                    setText("/inactive-profile : to disable your AstonParking profile")
+                    setText("/ap-inactive-profile : to disable your AstonParking profile")
                 },
                 Attachment().apply {
-                    setText("/active-profile : to enable your AstonParking profile")
+                    setText("/ap-active-profile : to enable your AstonParking profile")
+                },
+                Attachment().apply {
+                    setText("/ap-accept : to accept all attribution")
+                },
+                Attachment().apply {
+                    setText("/ap-decline : to decline all attribution")
+                },
+                Attachment().apply {
+                    setText("/ap-release dd/MM : to release an accepted spot for the specified date (day/month)")
                 }
         )
         richMessage.attachments = attachments
@@ -261,5 +270,26 @@ class SlackSlashCommand(
 
         val message = Message("You've declined all your propositions")
         return message
+    }
+
+    @RequestMapping(value = "/slack/release",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveReleaseCommand(@RequestParam("token") token: String,
+                                @RequestParam("team_id") teamId: String,
+                                @RequestParam("team_domain") teamDomain: String,
+                                @RequestParam("channel_id") channelId: String,
+                                @RequestParam("channel_name") channelName: String,
+                                @RequestParam("user_id") userId: String,
+                                @RequestParam("user_name") userName: String,
+                                @RequestParam("command") command: String,
+                                @RequestParam("text") text: String,
+                                @RequestParam("response_url") responseUrl: String): Message {
+
+        drawService.release(userId, text)
+
+        val message = Message("You have release the spot for the day (${text}) and it will be reaffected to another. Thanks.")
+        return message
+
     }
 }

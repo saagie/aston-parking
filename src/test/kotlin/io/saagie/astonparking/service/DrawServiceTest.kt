@@ -45,7 +45,7 @@ class DrawServiceTest {
     }
     val scheduleDao = mock<ScheduleDao> {
         on { exists(LocalDate.now()) } `it returns` true
-        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), spots = arrayListOf())
+        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), assignedSpots = arrayListOf(), userSelected = arrayListOf(), freeSpots = arrayListOf())
     }
 
     val slackBot = mock<SlackBot> {
@@ -205,4 +205,5 @@ class DrawServiceTest {
                 Proposition(id = "PID3", userId = allUsers.get(1).id!!, spotNumber = allSpots.get(2).number, day = LocalDate.now())
         )
     }
+
 }

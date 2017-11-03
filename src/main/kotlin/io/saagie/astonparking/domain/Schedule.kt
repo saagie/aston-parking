@@ -8,11 +8,14 @@ import java.time.LocalDateTime
 @Document
 data class Schedule(
         @Id val date: LocalDate,
-        val spots: ArrayList<ScheduleSpot>
+        val assignedSpots: ArrayList<ScheduleSpot>,
+        val freeSpots: ArrayList<Int>,
+        val userSelected: ArrayList<String>
 )
 
 data class ScheduleSpot(
         val spotNumber: Int,
-        val user: User,
+        val userId: String,
+        val username: String,
         val acceptDate: LocalDateTime
 )
