@@ -28,8 +28,7 @@
         <kluent.version>1.30</kluent.version>
         <jbot.version>3.0.2</jbot.version>
         <plugin.docker.imagePrefix>saagie</plugin.docker.imagePrefix>
-        <docker-maven-plugin.version>1.0.0</docker-maven-plugin.version>
-        <docker-maven-plugin.baseImage>java:8-jre</docker-maven-plugin.baseImage>
+        <dockerfile-maven-plugin-version>1.3.6</dockerfile-maven-plugin-version>
     </properties>
 
     <dependencies>
@@ -190,24 +189,24 @@
             </plugin>
             <plugin>
                 <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker-maven-plugin.version}</version>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${dockerfile-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <imageName>${plugin.docker.imagePrefix}/${project.artifactId}</imageName>
-                    <baseImage>${docker-maven-plugin.baseImage}</baseImage>
-                    <entryPoint>["java", "-jar", "/target/${project.build.finalName}.jar"]</entryPoint>
-                    <!-- copy the service's jar file from target into the root directory of the image -->
-                    <imageTags>
-                        <imageTag>${project.version}</imageTag>
-                        <imageTag>latest</imageTag>
-                    </imageTags>
-                    <resources>
-                        <resource>
-                            <targetPath>/target</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
+                    <repository>${plugin.docker.imagePrefix}/${project.artifactId}</repository>
+                    <tag>${project.version}</tag>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
                 </configuration>
             </plugin>
         </plugins>
