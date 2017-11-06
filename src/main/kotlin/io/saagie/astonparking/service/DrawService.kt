@@ -153,11 +153,7 @@ class DrawService(
 
     @Async
     fun release(userId: String, text: String) {
-        val now = LocalDate.now()
-        val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-        if (now.isAfter(date)) {
-            throw IllegalArgumentException("Date can't be before today")
-        }
+        val date = extractDate(text)
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
         val spotToBeDeleted = schedule.assignedSpots.filter { it.userId == userId }
@@ -166,5 +162,36 @@ class DrawService(
         scheduleDao.save(schedule)
         user.attribution = user.attribution - 1
         userService.save(user)
+    }
+
+    private fun extractDate(text: String): LocalDate {
+        val now = LocalDate.now()
+        val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        if (now.isAfter(date)) {
+            throw IllegalArgumentException("Date can't be before today")
+        }
+        return date
+    }
+
+    fun pick(userId: String, text: String): Int {
+        val date = extractDate(text)
+        val user = userService.get(userId)
+        val schedule = scheduleDao.findByDate(date)
+        if (schedule.freeSpots.isEmpty())
+            throw IllegalArgumentException("No free spot for the date ${text}")
+        val freeSpot = schedule.freeSpots.first()
+        schedule.freeSpots.removeAt(0)
+        schedule.userSelected.add(user.id!!)
+        schedule.assignedSpots.add(
+                ScheduleSpot(
+                        spotNumber = freeSpot,
+                        userId = user.id,
+                        username = user.username,
+                        acceptDate = LocalDateTime.now())
+        )
+        scheduleDao.save(schedule)
+        user.attribution = user.attribution + 1
+        userService.save(user)
+        return freeSpot
     }
 }

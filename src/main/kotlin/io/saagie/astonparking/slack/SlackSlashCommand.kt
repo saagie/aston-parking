@@ -292,4 +292,28 @@ class SlackSlashCommand(
         return message
 
     }
+
+    @RequestMapping(value = "/slack/pick",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceivePickCommand(@RequestParam("token") token: String,
+                                @RequestParam("team_id") teamId: String,
+                                @RequestParam("team_domain") teamDomain: String,
+                                @RequestParam("channel_id") channelId: String,
+                                @RequestParam("channel_name") channelName: String,
+                                @RequestParam("user_id") userId: String,
+                                @RequestParam("user_name") userName: String,
+                                @RequestParam("command") command: String,
+                                @RequestParam("text") text: String,
+                                @RequestParam("response_url") responseUrl: String): Message {
+
+        try{
+            val spot = drawService.pick(userId, text)
+            val message = Message("You have pick the ${spot} for the day (${text}) .")
+            return message
+        }catch(iae: IllegalArgumentException){
+            return Message(iae.message)
+        }
+
+    }
 }
