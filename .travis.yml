@@ -9,6 +9,5 @@ jdk:
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    mvn docker:build;
-    mvn docker:push;
+    mvn docker:build -DpushImage;
     fi
