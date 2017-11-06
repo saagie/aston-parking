@@ -11,6 +11,4 @@ after_success:
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     mvn docker:build;
     mvn docker:push;
-    #docker push saagie/aston-parking:1.0.1-SNAPSHOT;
-    #docker push saagie/aston-parking:latest;
     fi
