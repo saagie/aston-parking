@@ -80,13 +80,14 @@ class EmailService(
                     }
                     send(messagePreparator)
                 } else {
+                    /* DO NOT SEND EMAIL WHERE NOT SELECTED
                     val messagePreparator = MimeMessagePreparator { mimeMessage ->
                         val messageHelper = MimeMessageHelper(mimeMessage)
                         messageHelper.setTo(user.email)
                         messageHelper.setSubject("Spot attribution - Not this time")
                         messageHelper.setText(templateEngine.process("noSpotAttribution", context), true)
                     }
-                    send(messagePreparator)
+                    send(messagePreparator)*/
                 }
             }
         }
