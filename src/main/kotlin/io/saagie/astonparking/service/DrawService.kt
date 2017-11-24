@@ -120,7 +120,7 @@ class DrawService(
             schedule.assignedSpots.add(
                     ScheduleSpot(
                             spotNumber = it.spotNumber,
-                            userId = user.id!!,
+                            userId = user.id,
                             username = user.username,
                             acceptDate = LocalDateTime.now())
             )
@@ -156,7 +156,7 @@ class DrawService(
         val date = extractDate(text)
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
-        val spotToBeDeleted = schedule.assignedSpots.filter { it.userId == userId }
+        val spotToBeDeleted = schedule!!.assignedSpots.filter { it.userId == userId }
         schedule.assignedSpots.removeAll(spotToBeDeleted)
         schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
         scheduleDao.save(schedule)
@@ -177,6 +177,8 @@ class DrawService(
         val date = extractDate(text)
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
+        if (schedule == null)
+            throw IllegalArgumentException("No schedule for the date ${text}")
         if (schedule.freeSpots.isEmpty())
             throw IllegalArgumentException("No free spot for the date ${text}")
         val freeSpot = schedule.freeSpots.first()
