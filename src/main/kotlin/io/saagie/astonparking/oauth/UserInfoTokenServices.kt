@@ -26,7 +26,7 @@ open class UserInfoTokenServices(private val userInfoEndpointUrl: String, privat
     internal var authoritiesExtractor: AuthoritiesExtractor = FixedAuthoritiesExtractor()
     internal var principalExtractor: PrincipalExtractor = FixedPrincipalExtractor()
 
-    fun setRestTemplate(slackTemplate: OAuth2RestTemplate) {
+    fun setRestTemplate(restTemplate: OAuth2RestTemplate) {
         this.restTemplate = restTemplate
     }
 
