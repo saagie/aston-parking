@@ -64,6 +64,19 @@ class SlackBot : Bot() {
         }
     }
 
+    fun spotRelease(date: LocalDate){
+        val message = Message("*******************\n")
+        message.text += "A spot has been released the ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
+        message.text += "\nYou can pick it with the command /ap-pick ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
+        message.text += "*******************"
+        val restTemplate = RestTemplate()
+        try {
+            restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
+        } catch (e: RestClientException) {
+            logger.error("Error posting to Slack Incoming Webhook: ", e)
+        }
+    }
+
     fun generateTextForPropositions(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
         var message = ""
         val mapText = hashMapOf<Int, ArrayList<Proposition>>()

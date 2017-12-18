@@ -162,6 +162,7 @@ class DrawService(
         scheduleDao.save(schedule)
         user.attribution = user.attribution - 1
         userService.save(user)
+        slackBot.spotRelease(date)
     }
 
     private fun extractDate(text: String): LocalDate {
