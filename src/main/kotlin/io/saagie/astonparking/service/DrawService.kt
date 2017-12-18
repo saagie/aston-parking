@@ -30,6 +30,25 @@ class DrawService(
         this.attribution()
     }
 
+    @Scheduled(cron = "0 0 10 * * SUN")
+    fun cleanAttributions() {
+        val propositions = propositionDao.findAll()
+        propositions.forEach({
+            var schedule = Schedule(
+                    date = it.day,
+                    assignedSpots = arrayListOf(),
+                    freeSpots = arrayListOf(),
+                    userSelected = arrayListOf()
+            )
+            if (scheduleDao.exists(it.day)) {
+                schedule = scheduleDao.findOne(it.day)
+            }
+            schedule.freeSpots.add(it.spotNumber)
+            scheduleDao.save(schedule)
+        })
+        propositionDao.deleteAll()
+    }
+
     @Async
     fun attribution() {
         val sortedActiveUsers = sortAndFilterUsers().filter { it.alreadySelected == false }
