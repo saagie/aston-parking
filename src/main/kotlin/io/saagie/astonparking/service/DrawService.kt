@@ -202,11 +202,13 @@ class DrawService(
             throw IllegalArgumentException("No free spot for the date ${text}")
         val freeSpot = schedule.freeSpots.first()
         schedule.freeSpots.removeAt(0)
-        schedule.userSelected.add(user.id!!)
+        if (!schedule.userSelected.contains(user.id)) {
+            schedule.userSelected.add(user.id!!)
+        }
         schedule.assignedSpots.add(
                 ScheduleSpot(
                         spotNumber = freeSpot,
-                        userId = user.id,
+                        userId = user.id!!,
                         username = user.username,
                         acceptDate = LocalDateTime.now())
         )
