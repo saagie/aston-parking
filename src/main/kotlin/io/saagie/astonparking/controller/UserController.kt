@@ -2,7 +2,6 @@ package io.saagie.astonparking.controller
 
 import io.saagie.astonparking.domain.User
 import io.saagie.astonparking.service.UserService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UserController(@Autowired val userService: UserService) : SecurityController {
+class UserController(val userService: UserService) : SecurityController {
 
     @GetMapping("/profile")
     fun profile(principal: OAuth2Authentication): User {

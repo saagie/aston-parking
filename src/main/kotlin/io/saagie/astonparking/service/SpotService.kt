@@ -3,12 +3,11 @@ package io.saagie.astonparking.service
 import io.saagie.astonparking.dao.SpotDao
 import io.saagie.astonparking.domain.Spot
 import io.saagie.astonparking.domain.State
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
 
 @Service
-class SpotService(@Autowired val spotDao: SpotDao) {
+class SpotService(val spotDao: SpotDao) {
 
     fun getAllSpots(state: State): List<Spot>? {
         return getAllSpots(state.name)

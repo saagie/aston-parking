@@ -5,7 +5,6 @@ import io.saagie.astonparking.service.UserService
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.Message
 import me.ramswaroop.jbot.core.slack.models.RichMessage
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SlackSlashCommand(
-        @Autowired val userService: UserService,
-        @Autowired val drawService: DrawService,
-        @Autowired val slackBot: SlackBot
+        val userService: UserService,
+        val drawService: DrawService,
+        val slackBot: SlackBot
 ) {
 
     @Value("\${url}")
@@ -297,21 +296,21 @@ class SlackSlashCommand(
             method = arrayOf(RequestMethod.POST),
             consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
     fun onReceivePickCommand(@RequestParam("token") token: String,
-                                @RequestParam("team_id") teamId: String,
-                                @RequestParam("team_domain") teamDomain: String,
-                                @RequestParam("channel_id") channelId: String,
-                                @RequestParam("channel_name") channelName: String,
-                                @RequestParam("user_id") userId: String,
-                                @RequestParam("user_name") userName: String,
-                                @RequestParam("command") command: String,
-                                @RequestParam("text") text: String,
-                                @RequestParam("response_url") responseUrl: String): Message {
+                             @RequestParam("team_id") teamId: String,
+                             @RequestParam("team_domain") teamDomain: String,
+                             @RequestParam("channel_id") channelId: String,
+                             @RequestParam("channel_name") channelName: String,
+                             @RequestParam("user_id") userId: String,
+                             @RequestParam("user_name") userName: String,
+                             @RequestParam("command") command: String,
+                             @RequestParam("text") text: String,
+                             @RequestParam("response_url") responseUrl: String): Message {
 
-        try{
+        try {
             val spot = drawService.pick(userId, text)
             val message = Message("You have pick the ${spot} for the day (${text}) .")
             return message
-        }catch(iae: IllegalArgumentException){
+        } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
         }
 

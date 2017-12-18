@@ -4,7 +4,6 @@ import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
 import io.saagie.astonparking.slack.SlackBot
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -15,12 +14,12 @@ import java.util.*
 
 @Service
 class DrawService(
-        @Autowired val userService: UserService,
-        @Autowired val spotService: SpotService,
-        @Autowired val emailService: EmailService,
-        @Autowired val slackBot: SlackBot,
-        @Autowired val propositionDao: PropositionDao,
-        @Autowired val scheduleDao: ScheduleDao
+        val userService: UserService,
+        val spotService: SpotService,
+        val emailService: EmailService,
+        val slackBot: SlackBot,
+        val propositionDao: PropositionDao,
+        val scheduleDao: ScheduleDao
 ) {
 
     @Scheduled(cron = "0 0 10 * * MON")

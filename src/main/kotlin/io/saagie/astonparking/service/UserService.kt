@@ -2,15 +2,14 @@ package io.saagie.astonparking.service
 
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.function.Consumer
 
 
 @Service
 class UserService(
-        @Autowired val userDao: UserDao,
-        @Autowired val emailService: EmailService) {
+        val userDao: UserDao,
+        val emailService: EmailService) {
 
     fun registerUser(username: String, id: String): Boolean {
         if (!userDao.exists(id)) {

@@ -2,7 +2,6 @@ package io.saagie.astonparking.service
 
 import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.domain.User
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -16,8 +15,8 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class EmailService(
-        @Autowired val mailSender: JavaMailSender,
-        @Autowired val templateEngine: TemplateEngine) {
+        val mailSender: JavaMailSender,
+        val templateEngine: TemplateEngine) {
 
     @Value("\${sendEmail:true}")
     val sendEmail = true

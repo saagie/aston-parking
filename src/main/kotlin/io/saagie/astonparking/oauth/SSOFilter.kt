@@ -22,14 +22,11 @@ import javax.servlet.Filter
 
 @Configuration
 @EnableOAuth2Client
-class SSOFilter : WebSecurityConfigurerAdapter(false) {
+class SSOFilter(var userService: UserService) : WebSecurityConfigurerAdapter(false) {
 
     @Qualifier("oauth2ClientContext")
     @Autowired
     var oauth2ClientContext: OAuth2ClientContext? = null
-
-    @Autowired
-    lateinit var userService: UserService
 
 
     @Throws(Exception::class)
