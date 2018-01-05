@@ -117,7 +117,7 @@ class SlackBot : Bot() {
 
         schedules.forEach { schedule ->
             run {
-                message += "${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} : "
+                message += "`${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} :` \n"
                 schedule.assignedSpots.forEach({ spot ->
                     run {
                         message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
