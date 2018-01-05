@@ -200,6 +200,8 @@ class DrawService(
             throw IllegalArgumentException("No schedule for the date ${text}")
         if (schedule.freeSpots.isEmpty())
             throw IllegalArgumentException("No free spot for the date ${text}")
+        if (schedule.assignedSpots.count { it.userId == userId } >0)
+            throw IllegalArgumentException("A spot is already reserved for you")
         val freeSpot = schedule.freeSpots.first()
         schedule.freeSpots.removeAt(0)
         if (!schedule.userSelected.contains(user.id)) {
