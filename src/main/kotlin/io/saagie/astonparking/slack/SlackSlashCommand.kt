@@ -64,6 +64,9 @@ class SlackSlashCommand(
                 },
                 Attachment().apply {
                     setText("/ap-release dd/MM : to release an accepted spot for the specified date (day/month)")
+                },
+                Attachment().apply {
+                    setText("/ap-pick dd/MM : to pick a free spot for the specified date (day/month)")
                 }
         )
         richMessage.attachments = attachments
