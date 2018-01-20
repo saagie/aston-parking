@@ -32,7 +32,7 @@ class SSOFilter(var userService: UserService) : WebSecurityConfigurerAdapter(fal
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         // @formatter:off
-        http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/slack/**", "/guide/site/**").permitAll().anyRequest()
+        http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/slack/**", "/guide/site/**","/v2/api-docs/**","/swagger-ui.html","/swagger-resources/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll()

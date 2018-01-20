@@ -5,7 +5,7 @@
 
     <groupId>io.saagie</groupId>
     <artifactId>aston-parking</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <packaging>jar</packaging>
 
     <name>aston-parking</name>
@@ -29,6 +29,7 @@
         <jbot.version>3.0.2</jbot.version>
         <plugin.docker.imagePrefix>saagie</plugin.docker.imagePrefix>
         <dockerfile-maven-plugin-version>1.3.6</dockerfile-maven-plugin-version>
+        <springfox-swagger2.version>2.8.0</springfox-swagger2.version>
     </properties>
 
     <dependencies>
@@ -82,6 +83,19 @@
             <artifactId>jbot</artifactId>
             <version>${jbot.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-swagger2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-swagger2.version}</version>
+        </dependency>
+
 
         <!-- Just for the login/logout demo START-->
         <dependency>
