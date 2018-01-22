@@ -74,19 +74,10 @@ class EmailService(
                         context.setVariable("endDay", propositionsForUser.last().day.format(DateTimeFormatter.ofPattern("dd/MM")))
                         val messageHelper = MimeMessageHelper(mimeMessage)
                         messageHelper.setTo(user.email)
-                        messageHelper.setSubject("Spot attribution - Hey you've been selected")
+                        messageHelper.setSubject("Spot attribution")
                         messageHelper.setText(templateEngine.process("spotAttribution", context), true)
                     }
                     send(messagePreparator)
-                } else {
-                    /* DO NOT SEND EMAIL WHERE NOT SELECTED
-                    val messagePreparator = MimeMessagePreparator { mimeMessage ->
-                        val messageHelper = MimeMessageHelper(mimeMessage)
-                        messageHelper.setTo(user.email)
-                        messageHelper.setSubject("Spot attribution - Not this time")
-                        messageHelper.setText(templateEngine.process("noSpotAttribution", context), true)
-                    }
-                    send(messagePreparator)*/
                 }
             }
         }
@@ -103,7 +94,7 @@ class EmailService(
             context.setVariable("spotNumber", proposition.spotNumber)
             context.setVariable("user", selectedUser)
             context.setVariable("day", proposition.day.format(DateTimeFormatter.ofPattern("dd/MM")))
-            messageHelper.setSubject("Spot attribution - A free spot is for you")
+            messageHelper.setSubject("Spot attribution")
             messageHelper.setText(templateEngine.process("remoteAttribution", context), true)
         }
         send(messagePreparator)
