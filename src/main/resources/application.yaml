@@ -15,20 +15,14 @@ rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 sendEmail: true
 spring:
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: ${ASTON_PARKING_MAIL_HOST}
+    port: ${ASTON_PARKING_MAIL_PORT}
     username: ${ASTON_PARKING_MAIL_USERNAME}
     password: ${ASTON_PARKING_MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: true
-            required: true
-          auth: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+    protocol: smtp
+    tls: false
+    from: devops@creativedata.fr
+
 # MONGO
   data:
     mongodb:
