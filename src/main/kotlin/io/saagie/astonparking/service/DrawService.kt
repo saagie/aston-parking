@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Service
 class DrawService(
@@ -200,7 +199,7 @@ class DrawService(
             throw IllegalArgumentException("No schedule for the date ${text}")
         if (schedule.freeSpots.isEmpty())
             throw IllegalArgumentException("No free spot for the date ${text}")
-        if (schedule.assignedSpots.count { it.userId == userId } >0)
+        if (schedule.assignedSpots.count { it.userId == userId } > 0)
             throw IllegalArgumentException("A spot is already reserved for you")
         val freeSpot = schedule.freeSpots.first()
         schedule.freeSpots.removeAt(0)
