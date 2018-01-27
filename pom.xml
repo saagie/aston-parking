@@ -5,7 +5,7 @@
 
     <groupId>io.saagie</groupId>
     <artifactId>aston-parking</artifactId>
-    <version>1.0.11</version>
+    <version>1.0.12</version>
     <packaging>jar</packaging>
 
     <name>aston-parking</name>
@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <kotlin.version>1.2.21</kotlin.version>
+        <kotlin.version>1.2.10</kotlin.version>
         <jackson-module-kotlin.version>2.9.2</jackson-module-kotlin.version>
         <kluent.version>1.30</kluent.version>
         <jbot.version>3.0.2</jbot.version>
