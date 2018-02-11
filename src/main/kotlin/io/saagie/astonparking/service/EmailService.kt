@@ -21,6 +21,9 @@ class EmailService(
     @Value("\${sendEmail:true}")
     val sendEmail = true
 
+    @Value("\${mailFrom}")
+    val mailFrom = ""
+
     @Value("\${url}")
     val url = ""
 
@@ -34,6 +37,7 @@ class EmailService(
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
             messageHelper.setTo(user.email)
+            messageHelper.setFrom(mailFrom)
             messageHelper.setSubject("Account created")
             messageHelper.setText(templateEngine.process("accountCreated", context), true)
         }
@@ -50,6 +54,7 @@ class EmailService(
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
             messageHelper.setTo(user.email)
+            messageHelper.setFrom(mailFrom)
             messageHelper.setSubject("Status Change")
             messageHelper.setText(templateEngine.process("statusChange", context), true)
         }
@@ -74,6 +79,7 @@ class EmailService(
                         context.setVariable("endDay", propositionsForUser.last().day.format(DateTimeFormatter.ofPattern("dd/MM")))
                         val messageHelper = MimeMessageHelper(mimeMessage)
                         messageHelper.setTo(user.email)
+                        messageHelper.setFrom(mailFrom)
                         messageHelper.setSubject("Spot attribution")
                         messageHelper.setText(templateEngine.process("spotAttribution", context), true)
                     }
@@ -91,6 +97,7 @@ class EmailService(
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
             messageHelper.setTo(selectedUser.email)
+            messageHelper.setFrom(mailFrom)
             context.setVariable("spotNumber", proposition.spotNumber)
             context.setVariable("user", selectedUser)
             context.setVariable("day", proposition.day.format(DateTimeFormatter.ofPattern("dd/MM")))

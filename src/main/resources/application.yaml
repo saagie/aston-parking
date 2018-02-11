@@ -13,6 +13,7 @@ slackWebhookUrl: ${ASTON_PARKING_SLACK_WEBHOOK_URL}
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 # MAIL
 sendEmail: true
+mailFrom: ${ASTON_PARKING_MAIL_FROM}
 spring:
   mail:
     host: ${ASTON_PARKING_MAIL_HOST}
@@ -20,8 +21,15 @@ spring:
     username: ${ASTON_PARKING_MAIL_USERNAME}
     password: ${ASTON_PARKING_MAIL_PASSWORD}
     protocol: smtp
-    tls: false
-    from: devops@creativedata.fr
+    properties:
+          mail:
+            smtp:
+              starttls:
+                enable: false
+              auth: false
+              connectiontimeout: 5000
+              timeout: 5000
+              writetimeout: 5000
 
 # MONGO
   data:
