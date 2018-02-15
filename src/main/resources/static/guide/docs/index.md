@@ -43,6 +43,7 @@ Voici la liste de toutes les commandes possibles :
 * `/ap-register` - Permet l'enregistrement à l'application.
 * `/ap-profile` - Affiche le profile et ses infos.
 * `/ap-attribution` - Affiche la liste des propositions d'affection pour la semaine suivante et les attribution pour la semaine en cours.
+* `/ap-today` - Affiche les attributions du jour.
 * `/ap-inactive-profile` - Désactive le profile (utile pour ne pas être tiré au sort pendant les vacances par exemple).
 * `/ap-active-profile` - Active le profile (au retour des vacances par exemple) et permet d'être, à nouveau, tiré au sort.
 * `/ap-accept` - Permet d'accepter les propositions d'attribution qu'on a reçues.
