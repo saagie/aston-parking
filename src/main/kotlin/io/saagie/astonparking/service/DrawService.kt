@@ -191,14 +191,13 @@ class DrawService(
         return date
     }
 
-    fun pick(userId: String, text: String): Int {
-        val date = extractDate(text)
+    fun pick(userId: String, date: LocalDate): Int {
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
         if (schedule == null)
-            throw IllegalArgumentException("No schedule for the date ${text}")
+            throw IllegalArgumentException("No schedule for the date ${date}")
         if (schedule.freeSpots.isEmpty())
-            throw IllegalArgumentException("No free spot for the date ${text}")
+            throw IllegalArgumentException("No free spot for the date ${date}")
         if (schedule.assignedSpots.count { it.userId == userId } > 0)
             throw IllegalArgumentException("A spot is already reserved for you")
         val freeSpot = schedule.freeSpots.first()
@@ -218,4 +217,6 @@ class DrawService(
         userService.save(user)
         return freeSpot
     }
+
+    fun pick(userId: String, text: String) = pick(userId,extractDate(text))
 }

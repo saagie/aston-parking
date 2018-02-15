@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 
 @RestController
@@ -50,6 +51,12 @@ class SlackSlashCommand(
                 Attachment().apply {
                     setText("/ap-attribution : to display attribution for the current and the next week")
                 },
+                Attachment().apply {
+                    setText("/ap-today : to see today spots attribution")
+                },
+/*                Attachment().apply {
+                    setText("/ap-pick-today : to pick a spot today 'if available' = /ap-pick TODAY")
+                },*/
                 Attachment().apply {
                     setText("/ap-inactive-profile : to disable your AstonParking profile")
                 },
@@ -317,5 +324,54 @@ class SlackSlashCommand(
             return Message(iae.message)
         }
 
+    }
+
+    @RequestMapping(value = "/slack/pick-today",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceivePickTodayCommand(@RequestParam("token") token: String,
+                             @RequestParam("team_id") teamId: String,
+                             @RequestParam("team_domain") teamDomain: String,
+                             @RequestParam("channel_id") channelId: String,
+                             @RequestParam("channel_name") channelName: String,
+                             @RequestParam("user_id") userId: String,
+                             @RequestParam("user_name") userName: String,
+                             @RequestParam("command") command: String,
+                             @RequestParam("text") text: String,
+                             @RequestParam("response_url") responseUrl: String): Message {
+
+        try {
+            val spot = drawService.pick(userId, LocalDate.now())
+            val message = Message("You have pick the ${spot} for today.")
+            return message
+        } catch (iae: IllegalArgumentException) {
+            return Message(iae.message)
+        }
+
+    }
+
+    @RequestMapping(value = "/slack/today",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveTodayCommand(@RequestParam("token") token: String,
+                                    @RequestParam("team_id") teamId: String,
+                                    @RequestParam("team_domain") teamDomain: String,
+                                    @RequestParam("channel_id") channelId: String,
+                                    @RequestParam("channel_name") channelName: String,
+                                    @RequestParam("user_id") userId: String,
+                                    @RequestParam("user_name") userName: String,
+                                    @RequestParam("command") command: String,
+                                    @RequestParam("text") text: String,
+                                    @RequestParam("response_url") responseUrl: String): Message {
+
+        val currentSchedules = drawService.getCurrentSchedules().filter { it.date == LocalDate.now() }
+
+        val message = Message("*******************\n")
+        message.text += "\nToday :\n"
+        message.text += slackBot.generateTextForSchedule(currentSchedules)
+        message.text += "*******************\n"
+
+
+        return message
     }
 }
