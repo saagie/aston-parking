@@ -138,7 +138,7 @@ class SlackBot : Bot() {
                     }
                 })
                 if (!display){
-                    message += "No Spot available."
+                    message += "No Spot available.\n"
                 }
             }
         }
