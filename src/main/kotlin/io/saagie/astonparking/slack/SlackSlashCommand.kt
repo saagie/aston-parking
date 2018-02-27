@@ -1,5 +1,6 @@
 package io.saagie.astonparking.slack
 
+import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.service.DrawService
 import io.saagie.astonparking.service.UserService
 import me.ramswaroop.jbot.core.slack.models.Attachment
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
+import java.util.ArrayList
 
 
 @RestController
@@ -54,9 +56,9 @@ class SlackSlashCommand(
                 Attachment().apply {
                     setText("/ap-today : to see today spots attribution")
                 },
-/*                Attachment().apply {
+                Attachment().apply {
                     setText("/ap-pick-today : to pick a spot today 'if available' = /ap-pick TODAY")
-                },*/
+                },
                 Attachment().apply {
                     setText("/ap-inactive-profile : to disable your AstonParking profile")
                 },
@@ -74,6 +76,9 @@ class SlackSlashCommand(
                 },
                 Attachment().apply {
                     setText("/ap-pick dd/MM : to pick a free spot for the specified date (day/month)")
+                },
+                Attachment().apply {
+                    setText("/ap-planning : to display personnal planning for the current and the next week")
                 }
         )
         richMessage.attachments = attachments
@@ -223,13 +228,13 @@ class SlackSlashCommand(
         val users = userService.getAll()
 
         val message = Message("*******************\n")
-        message.text += slackBot.generateTextForSchedule(currentSchedules)
+        message.text += slackBot.generateTextForSchedule(currentSchedules, null)
         message.text += "*******************\n"
         message.text += "*Next week\n\n"
         message.text += "_Not accepted yet_\n"
-        message.text += slackBot.generateTextForPropositions(propositions!!, users)
+        message.text += slackBot.generateTextForPropositions(propositions!!, users, null)
         message.text += "\n_Accepted_\n"
-        message.text += slackBot.generateTextForSchedule(nextSchedules)
+        message.text += slackBot.generateTextForSchedule(nextSchedules, null)
         message.text += "*******************\n"
 
 
@@ -368,7 +373,40 @@ class SlackSlashCommand(
 
         val message = Message("*******************\n")
         message.text += "\nToday :\n"
-        message.text += slackBot.generateTextForSchedule(currentSchedules)
+        message.text += slackBot.generateTextForSchedule(currentSchedules, null)
+        message.text += "*******************\n"
+
+
+        return message
+    }
+
+    @RequestMapping(value = "/slack/planning",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceivePlanningCommand(@RequestParam("token") token: String,
+                              @RequestParam("team_id") teamId: String,
+                              @RequestParam("team_domain") teamDomain: String,
+                              @RequestParam("channel_id") channelId: String,
+                              @RequestParam("channel_name") channelName: String,
+                              @RequestParam("user_id") userId: String,
+                              @RequestParam("user_name") userName: String,
+                              @RequestParam("command") command: String,
+                              @RequestParam("text") text: String,
+                              @RequestParam("response_url") responseUrl: String): Message {
+
+        val propositions = drawService.getAllPropositions()!!.filter { it.userId ==  userId}
+        val currentSchedules = drawService.getCurrentSchedules()
+        val nextSchedules = drawService.getNextSchedules()
+        val users = userService.getAll()
+
+        val message = Message("*******************\n")
+        message.text += slackBot.generateTextForSchedule(currentSchedules, null)
+        message.text += "*******************\n"
+        message.text += "*Next week\n\n"
+        message.text += "_Not accepted yet_\n"
+        message.text += slackBot.generateTextForPropositions(propositions as ArrayList<Proposition>, users,userId)
+        message.text += "\n_Accepted_\n"
+        message.text += slackBot.generateTextForSchedule(nextSchedules,userId)
         message.text += "*******************\n"
 
 

@@ -53,7 +53,7 @@ class SlackBot : Bot() {
 
         val message = Message("*******************\n")
         message.text += ":game_die: Draw is done for the week started the ${nextMonday.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
-        message.text += generateTextForPropositions(propositions, sortedActiveUsers)
+        message.text += generateTextForPropositions(propositions, sortedActiveUsers, null)
         message.text += "\nYou can see attributions for the current and the next week by using the command /ap-attribution\n"
         message.text += "*******************"
         val restTemplate = RestTemplate()
@@ -64,7 +64,7 @@ class SlackBot : Bot() {
         }
     }
 
-    fun spotRelease(date: LocalDate){
+    fun spotRelease(date: LocalDate) {
         val message = Message("*******************\n")
         message.text += "A spot has been released the ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
         message.text += "\nYou can pick it with the command /ap-pick ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
@@ -77,14 +77,16 @@ class SlackBot : Bot() {
         }
     }
 
-    fun generateTextForPropositions(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>): String {
+    fun generateTextForPropositions(propositions: ArrayList<Proposition>, sortedActiveUsers: List<User>, userId: String?): String {
         var message = ""
         val mapText = hashMapOf<Int, ArrayList<Proposition>>()
         propositions.forEach { proposition ->
             run {
-                val listForSpotNumber = mapText.getOrDefault(proposition.spotNumber, arrayListOf())
-                listForSpotNumber.add(proposition)
-                mapText.put(proposition.spotNumber, listForSpotNumber)
+                if (userId == null || userId == proposition.userId) {
+                    val listForSpotNumber = mapText.getOrDefault(proposition.spotNumber, arrayListOf())
+                    listForSpotNumber.add(proposition)
+                    mapText.put(proposition.spotNumber, listForSpotNumber)
+                }
             }
         }
         val iterator = mapText.keys.iterator()
@@ -112,18 +114,20 @@ class SlackBot : Bot() {
         return message
     }
 
-    fun generateTextForSchedule(schedules: List<Schedule>): String {
+    fun generateTextForSchedule(schedules: List<Schedule>, userId: String?): String {
         var message = ""
 
         schedules.forEach { schedule ->
             run {
                 message += "`${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} :` \n"
-                schedule.assignedSpots.forEach({ spot ->
+                schedule.assignedSpots.sortedBy { it.spotNumber }.forEach({ spot ->
                     run {
-                        message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
+                        if (userId == null || userId == spot.userId) {
+                            message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
+                        }
                     }
                 })
-                schedule.freeSpots.forEach({ spotNumber ->
+                schedule.freeSpots.sorted().forEach({ spotNumber ->
                     run {
                         message += ":parking: ${spotNumber} :arrow_right: FREE :desert_island: \n"
                     }
