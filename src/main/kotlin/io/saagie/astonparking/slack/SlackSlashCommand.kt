@@ -400,7 +400,7 @@ class SlackSlashCommand(
         val users = userService.getAll()
 
         val message = Message("*******************\n")
-        message.text += slackBot.generateTextForSchedule(currentSchedules, null)
+        message.text += slackBot.generateTextForSchedule(currentSchedules, userId)
         message.text += "*******************\n"
         message.text += "*Next week\n\n"
         message.text += "_Not accepted yet_\n"

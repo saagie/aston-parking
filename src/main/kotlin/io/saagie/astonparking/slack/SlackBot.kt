@@ -117,21 +117,29 @@ class SlackBot : Bot() {
     fun generateTextForSchedule(schedules: List<Schedule>, userId: String?): String {
         var message = ""
 
+
         schedules.forEach { schedule ->
             run {
+                var display = false
+
                 message += "`${schedule.date.format(DateTimeFormatter.ofPattern("dd/MM"))} :` \n"
                 schedule.assignedSpots.sortedBy { it.spotNumber }.forEach({ spot ->
                     run {
                         if (userId == null || userId == spot.userId) {
+                            display = true
                             message += ":parking: ${spot.spotNumber} :arrow_right: <@${spot.userId}|${spot.username}> \n"
                         }
                     }
                 })
                 schedule.freeSpots.sorted().forEach({ spotNumber ->
                     run {
+                        display = true
                         message += ":parking: ${spotNumber} :arrow_right: FREE :desert_island: \n"
                     }
                 })
+                if (!display){
+                    message += "No Spot available."
+                }
             }
         }
         message += "\n"
