@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import io.saagie.astonparking.dao.PropositionDao
+import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
 import io.saagie.astonparking.slack.SlackBot
@@ -13,10 +14,14 @@ import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.never
+import java.lang.IllegalArgumentException
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
+import kotlin.test.fail
 
 
 class DrawServiceTest {
@@ -60,7 +65,12 @@ class DrawServiceTest {
 
     }
 
-    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao)
+    val requestDao = mock<RequestDao>{
+        on {findByUserId("ID1")} `it returns` null
+        on {findByUserId("ID2")} `it returns` listOf(Request(id="RQ1",date = LocalDate.now(),userId = "ID2",submitDate = LocalDateTime.now()))
+    }
+
+    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao,requestDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {
@@ -161,6 +171,28 @@ class DrawServiceTest {
         verify(scheduleDao, times(2)).save(Mockito.any(Schedule::class.java))
         verify(propositionDao, times(2)).delete(Mockito.anyString())
     }
+
+    @Test
+    fun should_add_request(){
+        //Given
+        //When
+        drawService.request("ID1","28/02")
+        //Then
+        verify(requestDao, times(1)).save(Mockito.any(Request::class.java))
+    }
+
+    @Test
+    fun should_not_add_request(){
+        //Given
+        //When
+        try {
+            drawService.request("ID2", "28/02")
+            fail("Should return an exception")
+        }catch (e: IllegalArgumentException){
+            verify(requestDao, never()).save(Mockito.any(Request::class.java))
+        }
+    }
+
 
     private fun initAllUser(): List<User> {
         return arrayListOf<User>(

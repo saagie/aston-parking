@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
@@ -91,21 +92,20 @@ class EmailService(
     }
 
     @Async
-    fun propositionRemote(proposition: Proposition, selectedUser: User) {
+    fun pickAfterRequest(user: User, spotNumber: Int, day: LocalDate) {
         val context = Context()
         context.setVariable("url", url)
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
-            messageHelper.setTo(selectedUser.email)
+            messageHelper.setTo(user.email)
             messageHelper.setFrom(mailFrom)
-            context.setVariable("spotNumber", proposition.spotNumber)
-            context.setVariable("user", selectedUser)
-            context.setVariable("day", proposition.day.format(DateTimeFormatter.ofPattern("dd/MM")))
-            messageHelper.setSubject("Spot attribution")
-            messageHelper.setText(templateEngine.process("remoteAttribution", context), true)
+            context.setVariable("spotNumber", spotNumber)
+            context.setVariable("user", user)
+            context.setVariable("day", day.format(DateTimeFormatter.ofPattern("dd/MM")))
+            messageHelper.setSubject("Spot attribution after a request")
+            messageHelper.setText(templateEngine.process("spotAttributionAfterRequest", context), true)
         }
         send(messagePreparator)
-
     }
 
     private fun send(messagePreparator: MimeMessagePreparator) {

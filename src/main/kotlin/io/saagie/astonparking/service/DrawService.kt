@@ -1,6 +1,7 @@
 package io.saagie.astonparking.service
 
 import io.saagie.astonparking.dao.PropositionDao
+import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
 import io.saagie.astonparking.slack.SlackBot
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @Service
 class DrawService(
@@ -18,7 +20,8 @@ class DrawService(
         val emailService: EmailService,
         val slackBot: SlackBot,
         val propositionDao: PropositionDao,
-        val scheduleDao: ScheduleDao
+        val scheduleDao: ScheduleDao,
+        val requestDao: RequestDao
 ) {
 
     @Scheduled(cron = "0 0 10 * * MON")
@@ -27,6 +30,11 @@ class DrawService(
         propositionDao.deleteAll()
         this.attribution()
         this.fixedSpots()
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    fun resetRequest() {
+        requestDao.deleteBySubmitDateBefore(LocalDate.now())
     }
 
     @Scheduled(cron = "0 0 10 * * SUN")
@@ -213,16 +221,37 @@ class DrawService(
         scheduleDao.save(schedule)
         user.attribution = user.attribution - 1
         userService.save(user)
-        slackBot.spotRelease(date)
+        if (!checkAndPickIfRequest(date)) {
+            slackBot.spotRelease(date)
+        }
+    }
+
+    private fun checkAndPickIfRequest(date: LocalDate): Boolean {
+        val request = requestDao.findByDate(date)
+        if (request!=null && request.isNotEmpty()){
+            val winner = request.sortedBy { it.submitDate }.first()
+            val spot = pick(winner.userId,date)
+            val user = userService.get(winner.userId)
+            user.attribution+=1
+            userService.save(user)
+            requestDao.delete(winner.id)
+            emailService.pickAfterRequest(userService.get(winner.userId),spot,date)
+            return true
+        }
+        return false
     }
 
     private fun extractDate(text: String): LocalDate {
         val now = LocalDate.now()
-        val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-        if (now.isAfter(date)) {
-            throw IllegalArgumentException("Date can't be before today")
+        try {
+            val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            if (now.isAfter(date)) {
+                throw IllegalArgumentException("Date can't be before today")
+            }
+            return date
+        } catch (e: DateTimeParseException) {
+            throw IllegalArgumentException("Date format is not correct : dd/MM (day/month)")
         }
-        return date
     }
 
     fun pick(userId: String, date: LocalDate): Int {
@@ -253,4 +282,20 @@ class DrawService(
     }
 
     fun pick(userId: String, text: String) = pick(userId, extractDate(text))
+
+    fun request(userId: String, text: String) {
+        val date = extractDate(text)
+
+        val requests = requestDao.findByUserId(userId)
+        if (requests != null && requests.isNotEmpty()) {
+            throw IllegalArgumentException("You have a request already recorded.")
+        }
+        requestDao.save(
+                Request(
+                        userId = userId,
+                        date = date,
+                        submitDate = LocalDateTime.now())
+        )
+
+    }
 }

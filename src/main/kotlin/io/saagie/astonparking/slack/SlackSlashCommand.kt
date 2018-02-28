@@ -79,6 +79,9 @@ class SlackSlashCommand(
                 },
                 Attachment().apply {
                     setText("/ap-planning : to display personnal planning for the current and the next week")
+                },
+                Attachment().apply {
+                    setText("/ap-request dd/MM : to make a request for a spot on a desired date (only one per user and double debit when selected)")
                 }
         )
         richMessage.attachments = attachments
@@ -411,5 +414,28 @@ class SlackSlashCommand(
 
 
         return message
+    }
+
+    @RequestMapping(value = "/slack/request",
+            method = arrayOf(RequestMethod.POST),
+            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun onReceiveRequestCommand(@RequestParam("token") token: String,
+                                 @RequestParam("team_id") teamId: String,
+                                 @RequestParam("team_domain") teamDomain: String,
+                                 @RequestParam("channel_id") channelId: String,
+                                 @RequestParam("channel_name") channelName: String,
+                                 @RequestParam("user_id") userId: String,
+                                 @RequestParam("user_name") userName: String,
+                                 @RequestParam("command") command: String,
+                                 @RequestParam("text") text: String,
+                                 @RequestParam("response_url") responseUrl: String): Message {
+
+        try {
+            drawService.request(userId, text)
+            val message = Message("Your request for a spot for the day (${text}) is recorded.")
+            return message
+        } catch (iae: IllegalArgumentException) {
+            return Message(iae.message)
+        }
     }
 }
