@@ -21,6 +21,13 @@ import java.util.*
 
 class DrawServiceTest {
 
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return uninitialized()
+    }
+
+    private fun <T> uninitialized(): T = null as T
+
     val allUsers = initAllUser()
 
     val allSpots = initAllSpots()
@@ -33,7 +40,8 @@ class DrawServiceTest {
     }
 
     val spotService = mock<SpotService> {
-        on { getAllSpots(State.FREE) } `it returns` allSpots
+        on { getAllSpots(State.FREE) } `it returns` allSpots.filter { it.state == State.FREE }
+        on { getAllSpots(State.FIXED) } `it returns` allSpots.filter { it.state == State.FIXED }
 
     }
 
@@ -130,6 +138,7 @@ class DrawServiceTest {
         //Then
         verify(propositionDao, times(1)).save(Mockito.anyListOf(Proposition::class.java))
         verify(emailService, times(1)).proposition(Mockito.anyListOf(Proposition::class.java), Mockito.anyListOf(User::class.java))
+        verify(userService, times(3)).save(any())
     }
 
     @Test
@@ -192,9 +201,11 @@ class DrawServiceTest {
 
     private fun initAllSpots(): List<Spot> {
         return listOf(
-                Spot(id = "SPOT0", number = 100, state = State.FREE),
-                Spot(id = "SPOT1", number = 101, state = State.FREE),
-                Spot(id = "SPOT2", number = 102, state = State.FREE)
+                Spot(id = "SPOT0", number = 100, state = State.FREE, userId = null),
+                Spot(id = "SPOT1", number = 101, state = State.FREE, userId = null),
+                Spot(id = "SPOT2", number = 102, state = State.FREE, userId = null),
+                Spot(id = "SPOT3", number = 103, state = State.FIXED, userId = "ID1"),
+                Spot(id = "SPOT4", number = 104, state = State.FIXED, userId = null)
         )
     }
 

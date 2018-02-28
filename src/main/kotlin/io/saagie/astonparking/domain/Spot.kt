@@ -8,5 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Spot(
         @JsonIgnore @Id val id: String?,
         val number: Int,
-        var state: State
+        var state: State,
+        var userId: String?
 )

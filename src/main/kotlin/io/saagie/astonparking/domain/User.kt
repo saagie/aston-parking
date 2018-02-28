@@ -19,7 +19,8 @@ data class User(
         var attribution: Int = 0,
         var enable: Boolean = false,
         var activated: Boolean = false,
-        var alreadySelected: Boolean = false
+        var alreadySelected: Boolean = false,
+        var hasFixedSpot: Boolean = false
 ) {
     fun status(): String {
         when {

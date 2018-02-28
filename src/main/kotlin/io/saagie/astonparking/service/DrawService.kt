@@ -26,6 +26,7 @@ class DrawService(
         userService.resetAllSelectedAttribution()
         propositionDao.deleteAll()
         this.attribution()
+        this.fixedSpots()
     }
 
     @Scheduled(cron = "0 0 10 * * SUN")
@@ -68,6 +69,38 @@ class DrawService(
         slackBot.proposition(propositions, sortedActiveUsers, nextMonday)
     }
 
+    fun fixedSpots() {
+        val nextMonday = getNextMonday(LocalDate.now())
+        val fixedSpots = spotService.getAllSpots(State.FIXED)?.filter { it.userId != null }
+
+        fixedSpots?.forEach {
+            val user = userService.get(it.userId!!)
+            if (user.activated) {
+                for (i in 0L..4L) {
+                    val date = nextMonday.plusDays(i)
+                    var schedule = Schedule(
+                            date = date,
+                            assignedSpots = arrayListOf(),
+                            freeSpots = arrayListOf(),
+                            userSelected = arrayListOf()
+                    )
+                    if (scheduleDao.exists(date)) {
+                        schedule = scheduleDao.findOne(date)
+                    }
+                    schedule.userSelected.add(it.userId!!)
+                    schedule.assignedSpots.add(
+                            ScheduleSpot(
+                                    spotNumber = it.number,
+                                    userId = it.userId!!,
+                                    username = user.username,
+                                    acceptDate = LocalDateTime.now())
+                    )
+                    scheduleDao.save(schedule)
+                }
+            }
+        }
+    }
+
     fun generateAllProposition(number: Int, userId: String, nextMonday: LocalDate): List<Proposition> {
         val listProps = arrayListOf<Proposition>()
         for (i in 0L..4L) {
@@ -102,6 +135,7 @@ class DrawService(
     fun sortAndFilterUsers(): List<User> {
         return userService
                 .getAllActive()
+                .filter { !it.hasFixedSpot }
                 .sortedBy { it.attribution }
     }
 
@@ -218,5 +252,5 @@ class DrawService(
         return freeSpot
     }
 
-    fun pick(userId: String, text: String) = pick(userId,extractDate(text))
+    fun pick(userId: String, text: String) = pick(userId, extractDate(text))
 }

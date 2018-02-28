@@ -134,14 +134,14 @@ class SpotServiceTest {
         spotCaptor.value.number `should be` 100
     }
 
-    private fun newSpot() = Spot(null, 104, State.FREE)
+    private fun newSpot() = Spot(null, 104, State.FREE,userId = null)
 
     private fun initAllSpots(): List<Spot> {
         return arrayListOf<Spot>(
-                Spot(null, 100, State.FIXED),
-                Spot(null, 101, State.FIXED),
-                Spot(null, 102, State.FIXED),
-                Spot(null, 103, State.FREE)
+                Spot(null, 100, State.FIXED,userId = null),
+                Spot(null, 101, State.FIXED,userId = "1"),
+                Spot(null, 102, State.FIXED,userId = "2"),
+                Spot(null, 103, State.FREE,userId = null)
         )
     }
 }
