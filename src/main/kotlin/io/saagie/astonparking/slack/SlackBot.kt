@@ -65,10 +65,7 @@ class SlackBot : Bot() {
     }
 
     fun spotRelease(date: LocalDate) {
-        val message = Message("*******************\n")
-        message.text += "A spot has been released the ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
-        message.text += "\nYou can pick it with the command /ap-pick ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n"
-        message.text += "*******************"
+        val message = Message("A spot has been released the ${date.format(DateTimeFormatter.ofPattern("dd/MM"))}. You can pick it with the command /ap-pick ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} \n")
         val restTemplate = RestTemplate()
         try {
             restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
