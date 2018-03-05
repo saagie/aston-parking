@@ -20,6 +20,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.test.fail
 
@@ -65,12 +66,12 @@ class DrawServiceTest {
 
     }
 
-    val requestDao = mock<RequestDao> {
-        on { findByUserId("ID1") } `it returns` null
-        on { findByUserId("ID2") } `it returns` listOf(Request(id = "RQ1", date = LocalDate.now(), userId = "ID2", submitDate = LocalDateTime.now()))
+    val requestDao = mock<RequestDao>{
+        on {findByUserId("ID1")} `it returns` null
+        on {findByUserId("ID2")} `it returns` listOf(Request(id="RQ1",date = LocalDate.now(),userId = "ID2",submitDate = LocalDateTime.now()))
     }
 
-    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao, requestDao)
+    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao,requestDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {
@@ -173,24 +174,24 @@ class DrawServiceTest {
     }
 
     @Test
-    fun should_add_request() {
+    fun should_add_request(){
         //Given
         //When
         val date = LocalDate.now().plusDays(1)
-        drawService.request("ID1", "${date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM"))}")
+        drawService.request("ID1", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
         //Then
         verify(requestDao, times(1)).save(Mockito.any(Request::class.java))
     }
 
     @Test
-    fun should_not_add_request() {
+    fun should_not_add_request(){
         //Given
         //When
         try {
             val date = LocalDate.now().minusDays(1)
             drawService.request("ID2", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
             fail("Should return an exception")
-        } catch (e: IllegalArgumentException) {
+        }catch (e: IllegalArgumentException){
             verify(requestDao, never()).save(Mockito.any(Request::class.java))
         }
     }
