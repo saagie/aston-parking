@@ -5,9 +5,13 @@ services:
   - docker
 jdk:
   - oraclejdk8
+script:
+   - ./gradlew assemble
+   - ./gradlew check
+   - ./gradlew docker
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    mvn dockerfile:build dockerfile:push;
+    ./gradlew dockerPush
     fi
