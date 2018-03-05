@@ -6,9 +6,9 @@ services:
 jdk:
   - oraclejdk8
 script:
-   - gradle assemble
-   - gradle check
-   - gradle docker
+   - ./gradlew assemble
+   - ./gradlew check
+   - ./gradlew docker
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
