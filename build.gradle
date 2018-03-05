@@ -71,7 +71,7 @@ dependencies {
 }
 
 docker {
-    name "saagie/${jar.baseName}"
+    name "saagie/${jar.baseName}:${version}"
     files jar.archivePath
     buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
