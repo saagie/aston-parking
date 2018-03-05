@@ -20,6 +20,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.test.fail
 
@@ -176,7 +177,8 @@ class DrawServiceTest {
     fun should_add_request(){
         //Given
         //When
-        drawService.request("ID1","28/02")
+        val date = LocalDate.now().plusDays(1)
+        drawService.request("ID1", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
         //Then
         verify(requestDao, times(1)).save(Mockito.any(Request::class.java))
     }
@@ -186,7 +188,8 @@ class DrawServiceTest {
         //Given
         //When
         try {
-            drawService.request("ID2", "28/02")
+            val date = LocalDate.now().minusDays(1)
+            drawService.request("ID2", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
             fail("Should return an exception")
         }catch (e: IllegalArgumentException){
             verify(requestDao, never()).save(Mockito.any(Request::class.java))

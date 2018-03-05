@@ -1,5 +1,6 @@
 package io.saagie.astonparking.domain
 
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldEqualTo
 import org.junit.Test
 
@@ -18,7 +19,7 @@ class UserTest {
         //When
         val status = user.status()
         //Then
-        status shouldEqualTo "Active"
+        status shouldBeEqualTo "Active"
     }
 
     @Test
@@ -33,7 +34,7 @@ class UserTest {
         //When
         val status = user.status()
         //Then
-        status shouldEqualTo "Hibernate"
+        status shouldBeEqualTo "Hibernate"
     }
 
     @Test
@@ -48,7 +49,7 @@ class UserTest {
         //When
         val status = user.status()
         //Then
-        status shouldEqualTo "Not activated"
+        status shouldBeEqualTo "Not activated"
     }
 
     @Test
@@ -63,7 +64,7 @@ class UserTest {
         //When
         val status = user.status()
         //Then
-        status shouldEqualTo "Not activated"
+        status shouldBeEqualTo "Not activated"
     }
 
     @Test
