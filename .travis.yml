@@ -5,10 +5,10 @@ services:
   - docker
 jdk:
   - oraclejdk8
-
-gradle assemble
-gradle check
-gradle docker
+script:
+   - gradle assemble
+   - gradle check
+   - gradle docker
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
