@@ -5,7 +5,7 @@
 
     <groupId>io.saagie</groupId>
     <artifactId>aston-parking</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20</version>
     <packaging>jar</packaging>
 
     <name>aston-parking</name>
@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jre8</artifactId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
