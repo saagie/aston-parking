@@ -143,4 +143,14 @@ class SlackBot : Bot() {
         return message
     }
 
+    fun requestCreated(user: User, date: LocalDate) {
+        val message = Message("A spot is requested the ${date.format(DateTimeFormatter.ofPattern("dd/MM"))}. You can pick it with the command /ap-pick ${date.format(DateTimeFormatter.ofPattern("dd/MM"))} by <@${user.id}|user.username}>.")
+        val restTemplate = RestTemplate()
+        try {
+            restTemplate.postForEntity<String>(slackWebhookUrl, message, String::class.java)
+        } catch (e: RestClientException) {
+            logger.error("Error posting to Slack Incoming Webhook: ", e)
+        }
+    }
+
 }

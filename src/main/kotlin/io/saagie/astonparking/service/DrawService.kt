@@ -296,6 +296,6 @@ class DrawService(
                         date = date,
                         submitDate = LocalDateTime.now())
         )
-
+        slackBot.requestCreated(userService.get(userId),date)
     }
 }
