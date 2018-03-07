@@ -13,7 +13,7 @@ class UserService(
         val emailService: EmailService) {
 
     fun registerUser(username: String, id: String): Boolean {
-        if (!userDao.existsById(id)) {
+        if (!userDao.exists(id)) {
             userDao.save(User(id = id, username = username))
             return true
         }
@@ -24,8 +24,8 @@ class UserService(
     fun updateUserInfo(map: Map<String, Any>) {
         val userMap = map.get("user") as Map<*, *>
         val id = userMap.get("id") as String
-        if (userDao.existsById(id)) {
-            val user = userDao.findById(id).get()
+        if (userDao.exists(id)) {
+            val user = userDao.findOne(id)
             val activatedUser = user.activated
             user.apply {
                 email = userMap.get("email") as String
@@ -47,7 +47,7 @@ class UserService(
     }
 
     fun get(id: String): User {
-        return userDao.findById(id).orElseThrow({ChangeSetPersister.NotFoundException()})
+        return userDao.findOne(id)
     }
 
     fun getAll(): List<User> {

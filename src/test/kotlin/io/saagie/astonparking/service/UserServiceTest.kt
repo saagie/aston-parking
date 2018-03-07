@@ -17,11 +17,11 @@ class UserServiceTest {
     val userCaptor = ArgumentCaptor.forClass(User::class.java)
 
     val userDao: UserDao = mock<UserDao> {
-        on { findById("ID1") }.doReturn(Optional.of(allUser.filter { it.id == "ID1" }.first()))
-        on { findById("ID3") }.doReturn(Optional.of(allUser.filter { it.id == "ID3" }.first()))
-        on { existsById("id") }.doReturn(false)
-        on { existsById("ID1") }.doReturn(true)
-        on { existsById("ID3") }.doReturn(true)
+        on { findOne("ID1") }.doReturn(allUser.filter { it.id == "ID1" }.first())
+        on { findOne("ID3") }.doReturn(allUser.filter { it.id == "ID3" }.first())
+        on { exists("id") }.doReturn(false)
+        on { exists("ID1") }.doReturn(true)
+        on { exists("ID3") }.doReturn(true)
         on { findAll() }.doReturn(allUser)
         on { findByEnable(true) }.doReturn(allUser.filter { it.activated })
     }
@@ -67,7 +67,7 @@ class UserServiceTest {
         //When
         userService.changeStatus(id)
         //Then
-        verify(userDao, times(1)).findById(id)
+        verify(userDao, times(1)).findOne(id)
         verify(userDao, times(1)).save(userCaptor.capture())
         userCaptor.value.enable `should be` false
     }
@@ -81,7 +81,7 @@ class UserServiceTest {
         //When
         userService.changeStatus(id, false)
         //Then
-        verify(userDao, times(1)).findById(id)
+        verify(userDao, times(1)).findOne(id)
         verify(userDao, times(1)).save(userCaptor.capture())
         userCaptor.value.enable `should be` false
     }
