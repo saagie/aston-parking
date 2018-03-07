@@ -21,11 +21,12 @@ import java.util.concurrent.Executor
 class AstonParkingApplication {
     @Bean
     fun asyncExecutor(): Executor {
-        val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = 2
-        executor.maxPoolSize = 4
-        executor.setQueueCapacity(500)
-        executor.threadNamePrefix = "AstonParking-"
+        var executor = ThreadPoolTaskExecutor()
+        executor.apply {
+            corePoolSize = 2
+            maxPoolSize = 4
+            setQueueCapacity(500)
+        }
         executor.initialize()
         return executor
     }

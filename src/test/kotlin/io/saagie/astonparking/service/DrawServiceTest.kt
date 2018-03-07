@@ -58,8 +58,8 @@ class DrawServiceTest {
         on { findAll() } `it returns` allPropositions
     }
     val scheduleDao = mock<ScheduleDao> {
-        on { exists(LocalDate.now()) } `it returns` true
-        on { findOne(LocalDate.now()) } `it returns` Schedule(date = LocalDate.now(), assignedSpots = arrayListOf(), userSelected = arrayListOf(), freeSpots = arrayListOf())
+        on { existsById(any()) } `it returns` true
+        on { findByDate(any()) } `it returns` Schedule(date = LocalDate.now(), assignedSpots = arrayListOf(), userSelected = arrayListOf(), freeSpots = arrayListOf())
     }
 
     val slackBot = mock<SlackBot> {
@@ -147,7 +147,7 @@ class DrawServiceTest {
         //When
         drawService.attribution()
         //Then
-        verify(propositionDao, times(1)).save(Mockito.anyListOf(Proposition::class.java))
+        verify(propositionDao, times(1)).saveAll(Mockito.anyListOf(Proposition::class.java))
         verify(emailService, times(1)).proposition(Mockito.anyListOf(Proposition::class.java), Mockito.anyListOf(User::class.java))
         verify(userService, times(3)).save(any())
     }
@@ -170,7 +170,7 @@ class DrawServiceTest {
         //Then
         response `should be` true
         verify(scheduleDao, times(2)).save(Mockito.any(Schedule::class.java))
-        verify(propositionDao, times(2)).delete(Mockito.anyString())
+        verify(propositionDao, times(2)).deleteById(Mockito.anyString())
     }
 
     @Test

@@ -2,6 +2,7 @@ package io.saagie.astonparking.service
 
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
+import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.stereotype.Service
 import java.util.function.Consumer
 
@@ -12,7 +13,7 @@ class UserService(
         val emailService: EmailService) {
 
     fun registerUser(username: String, id: String): Boolean {
-        if (!userDao.exists(id)) {
+        if (!userDao.existsById(id)) {
             userDao.save(User(id = id, username = username))
             return true
         }
@@ -23,8 +24,8 @@ class UserService(
     fun updateUserInfo(map: Map<String, Any>) {
         val userMap = map.get("user") as Map<*, *>
         val id = userMap.get("id") as String
-        if (userDao.exists(id)) {
-            val user = userDao.findOne(id)
+        if (userDao.existsById(id)) {
+            val user = userDao.findById(id).get()
             val activatedUser = user.activated
             user.apply {
                 email = userMap.get("email") as String
@@ -46,7 +47,7 @@ class UserService(
     }
 
     fun get(id: String): User {
-        return userDao.findOne(id)
+        return userDao.findById(id).orElseThrow({ChangeSetPersister.NotFoundException()})
     }
 
     fun getAll(): List<User> {
@@ -58,14 +59,14 @@ class UserService(
     }
 
     fun changeStatus(id: String) {
-        val user = userDao.findOne(id)
+        val user = get(id)
         user.enable = !user.enable
         userDao.save(user)
         emailService.profileStatusChange(user)
     }
 
     fun changeStatus(id: String, status: Boolean) {
-        val user = userDao.findOne(id)
+        val user = get(id)
         user.enable = status
         userDao.save(user)
         emailService.profileStatusChange(user)

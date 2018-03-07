@@ -27,7 +27,7 @@ class SlackBot : Bot() {
     private val slackToken: String? = null
 
     @Value("\${slackWebhookUrl}")
-    private val slackWebhookUrl: String? = null
+    private val slackWebhookUrl: String = ""
 
     override fun getSlackToken(): String? {
         return slackToken

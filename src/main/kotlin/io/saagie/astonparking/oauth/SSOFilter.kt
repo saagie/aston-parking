@@ -43,8 +43,8 @@ class SSOFilter(var userService: UserService) : WebSecurityConfigurerAdapter(fal
     }
 
     @Bean
-    fun oauth2ClientFilterRegistration(filter: OAuth2ClientContextFilter): FilterRegistrationBean {
-        val registration = FilterRegistrationBean()
+    fun oauth2ClientFilterRegistration(filter: OAuth2ClientContextFilter): FilterRegistrationBean<OAuth2ClientContextFilter> {
+        val registration = FilterRegistrationBean<OAuth2ClientContextFilter>()
         registration.filter = filter
         registration.order = -100
         return registration

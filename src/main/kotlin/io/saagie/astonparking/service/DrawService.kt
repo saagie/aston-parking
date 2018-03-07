@@ -47,8 +47,8 @@ class DrawService(
                     freeSpots = arrayListOf(),
                     userSelected = arrayListOf()
             )
-            if (scheduleDao.exists(it.day)) {
-                schedule = scheduleDao.findOne(it.day)
+            if (scheduleDao.existsById(it.day)) {
+                schedule = scheduleDao.findById(it.day).get()
             }
             schedule.freeSpots.add(it.spotNumber)
             scheduleDao.save(schedule)
@@ -72,7 +72,7 @@ class DrawService(
                 userService.save(user)
             }
         }
-        propositionDao.save(propositions)
+        propositionDao.saveAll(propositions)
         emailService.proposition(propositions, sortedActiveUsers)
         slackBot.proposition(propositions, sortedActiveUsers, nextMonday)
     }
@@ -92,8 +92,8 @@ class DrawService(
                             freeSpots = arrayListOf(),
                             userSelected = arrayListOf()
                     )
-                    if (scheduleDao.exists(date)) {
-                        schedule = scheduleDao.findOne(date)
+                    if (scheduleDao.existsById(date)) {
+                        schedule = scheduleDao.findById(date).get()
                     }
                     schedule.userSelected.add(it.userId!!)
                     schedule.assignedSpots.add(
@@ -131,7 +131,7 @@ class DrawService(
     }
 
     private fun spotAlreadySchedule(number: Int, date: LocalDate): Boolean {
-        val schedule = scheduleDao.findOne(date)
+        val schedule = scheduleDao.findByDate(date)
         return schedule != null && schedule.assignedSpots.filter { it.spotNumber == number }.isNotEmpty()
 
     }
@@ -172,8 +172,8 @@ class DrawService(
                     freeSpots = arrayListOf(),
                     userSelected = arrayListOf()
             )
-            if (scheduleDao.exists(it.day)) {
-                schedule = scheduleDao.findOne(it.day)
+            if (scheduleDao.existsById(it.day)) {
+                schedule = scheduleDao.findByDate(it.day)!!
             }
             schedule.userSelected.add(user.id!!)
             schedule.assignedSpots.add(
@@ -184,7 +184,7 @@ class DrawService(
                             acceptDate = LocalDateTime.now())
             )
             scheduleDao.save(schedule)
-            propositionDao.delete(it.id)
+            propositionDao.deleteById(it.id!!)
             user.incrementAttribution()
         }
         userService.save(user)
@@ -194,7 +194,7 @@ class DrawService(
     fun declineProposition(userId: String) {
         val propositions = propositionDao.findAll()
         val props = propositions.filter { it.userId == userId }
-        propositionDao.delete(props)
+        propositionDao.deleteAll(props)
         this.attribution()
     }
 
@@ -234,7 +234,7 @@ class DrawService(
             val user = userService.get(winner.userId)
             user.attribution+=1
             userService.save(user)
-            requestDao.delete(winner.id)
+            requestDao.deleteById(winner.id!!)
             emailService.pickAfterRequest(userService.get(winner.userId),spot,date)
             return true
         }

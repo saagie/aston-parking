@@ -37,7 +37,7 @@ class EmailService(
 
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
-            messageHelper.setTo(user.email)
+            messageHelper.setTo(user.email!!)
             messageHelper.setFrom(mailFrom)
             messageHelper.setSubject("Account created")
             messageHelper.setText(templateEngine.process("accountCreated", context), true)
@@ -54,7 +54,7 @@ class EmailService(
 
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
-            messageHelper.setTo(user.email)
+            messageHelper.setTo(user.email!!)
             messageHelper.setFrom(mailFrom)
             messageHelper.setSubject("Status Change")
             messageHelper.setText(templateEngine.process("statusChange", context), true)
@@ -79,7 +79,7 @@ class EmailService(
                         context.setVariable("startDay", propositionsForUser.first().day.format(DateTimeFormatter.ofPattern("dd/MM")))
                         context.setVariable("endDay", propositionsForUser.last().day.format(DateTimeFormatter.ofPattern("dd/MM")))
                         val messageHelper = MimeMessageHelper(mimeMessage)
-                        messageHelper.setTo(user.email)
+                        messageHelper.setTo(user.email!!)
                         messageHelper.setFrom(mailFrom)
                         messageHelper.setSubject("Spot attribution")
                         messageHelper.setText(templateEngine.process("spotAttribution", context), true)
@@ -97,7 +97,7 @@ class EmailService(
         context.setVariable("url", url)
         val messagePreparator = MimeMessagePreparator { mimeMessage ->
             val messageHelper = MimeMessageHelper(mimeMessage)
-            messageHelper.setTo(user.email)
+            messageHelper.setTo(user.email!!)
             messageHelper.setFrom(mailFrom)
             context.setVariable("spotNumber", spotNumber)
             context.setVariable("user", user)

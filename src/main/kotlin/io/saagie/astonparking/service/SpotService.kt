@@ -28,7 +28,7 @@ class SpotService(val spotDao: SpotDao) {
     fun updateSpot(number: Int, state: State): Spot? {
         val spot = spotDao.findByNumber(number)
         spot?.state = state
-        spotDao.save(spot)
+        spotDao.save(spot!!)
         return spot
     }
 
@@ -38,6 +38,6 @@ class SpotService(val spotDao: SpotDao) {
 
     fun deleteSpot(number: Int) {
         val spot = spotDao.findByNumber(number)
-        spotDao.delete(spot)
+        spotDao.delete(spot!!)
     }
 }
