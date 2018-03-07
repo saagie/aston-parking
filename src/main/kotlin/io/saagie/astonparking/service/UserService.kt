@@ -47,7 +47,10 @@ class UserService(
     }
 
     fun get(id: String): User {
-        return userDao.findOne(id)
+        if (userDao.exists(id)) {
+            return userDao.findOne(id)
+        }
+        throw IllegalArgumentException("User (id:${id}) not found")
     }
 
     fun getAll(): List<User> {
