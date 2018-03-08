@@ -298,4 +298,11 @@ class DrawService(
         )
         slackBot.requestCreated(userService.get(userId),date)
     }
+
+    fun cancelrequest(userId: String) {
+        val request = requestDao.findByUserId(userId)
+        if (request!=null && request.isNotEmpty()){
+            requestDao.delete(request.first().id)
+        }
+    }
 }

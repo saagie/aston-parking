@@ -53,6 +53,7 @@ Voici la liste de toutes les commandes possibles :
 * `/ap-pick dd/MM` - Permet de s'approprier une place libre pour le jour indiqué.
 * `/ap-pick-today` - Permet de s'approprier une place libre aujourd'hui (si disponible).
 * `/ap-request dd/MM` - Permet de réserver une place pour le jour "dd/MM" dès qu'une place se libère (attention : compte comme double en cas d'attribution)
+* `/ap-request-cancel` - Permet d'annuler la requête en cours.
 
 
 ## Le projet

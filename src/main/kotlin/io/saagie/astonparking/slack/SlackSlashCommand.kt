@@ -1,5 +1,6 @@
 package io.saagie.astonparking.slack
 
+import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.service.DrawService
 import io.saagie.astonparking.service.UserService
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 
 
@@ -20,15 +22,16 @@ import java.util.ArrayList
 class SlackSlashCommand(
         val userService: UserService,
         val drawService: DrawService,
-        val slackBot: SlackBot
+        val slackBot: SlackBot,
+        val requestDao: RequestDao
 ) {
 
     @Value("\${url}")
     private val url: String? = null
 
-    @RequestMapping(value = "/slack/command",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/command"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveHelpCommand(@RequestParam("token") token: String,
                              @RequestParam("team_id") teamId: String,
                              @RequestParam("team_domain") teamDomain: String,
@@ -82,6 +85,9 @@ class SlackSlashCommand(
                 },
                 Attachment().apply {
                     setText("/ap-request dd/MM : to make a request for a spot on a desired date (only one per user and double debit when selected)")
+                },
+                Attachment().apply {
+                    setText("/ap-request-cancel : to cancel your current request")
                 }
         )
         richMessage.attachments = attachments
@@ -90,9 +96,9 @@ class SlackSlashCommand(
         return richMessage.encodedMessage()
     }
 
-    @RequestMapping(value = "/slack/register",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/register"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveRegisterCommand(@RequestParam("token") token: String,
                                  @RequestParam("team_id") teamId: String,
                                  @RequestParam("team_domain") teamDomain: String,
@@ -117,9 +123,9 @@ class SlackSlashCommand(
         return richMessage.encodedMessage()
     }
 
-    @RequestMapping(value = "/slack/profile/active",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/profile/active"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveActiveProfileCommand(@RequestParam("token") token: String,
                                       @RequestParam("team_id") teamId: String,
                                       @RequestParam("team_domain") teamDomain: String,
@@ -140,9 +146,9 @@ class SlackSlashCommand(
         return richMessage.encodedMessage()
     }
 
-    @RequestMapping(value = "/slack/profile/inactive",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/profile/inactive"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveInactiveProfileCommand(@RequestParam("token") token: String,
                                         @RequestParam("team_id") teamId: String,
                                         @RequestParam("team_domain") teamDomain: String,
@@ -163,9 +169,9 @@ class SlackSlashCommand(
         return richMessage.encodedMessage()
     }
 
-    @RequestMapping(value = "/slack/profile",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/profile"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveProfileCommand(@RequestParam("token") token: String,
                                 @RequestParam("team_id") teamId: String,
                                 @RequestParam("team_domain") teamDomain: String,
@@ -187,6 +193,11 @@ class SlackSlashCommand(
                     Please log in AstonParking to activate your profile (${url})
                     """.trimIndent()
             }
+            var requestMessage = "None."
+            val request = requestDao.findByUserId(userId)
+            if (request!=null && request.isNotEmpty()){
+                requestMessage = request.first().date.format(DateTimeFormatter.ofPattern("dd/MM"))
+            }
             val attachments = arrayOf(
                     Attachment().apply {
                         setText("Username : ${user.username}")
@@ -199,6 +210,9 @@ class SlackSlashCommand(
                     },
                     Attachment().apply {
                         setText("Status :  ${user.status()}")
+                    },
+                    Attachment().apply {
+                        setText("Pending request :  ${requestMessage}")
                     }
             )
             richMessage.attachments = attachments
@@ -211,9 +225,9 @@ class SlackSlashCommand(
 
     }
 
-    @RequestMapping(value = "/slack/attribution",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/attribution"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveAttributionCommand(@RequestParam("token") token: String,
                                     @RequestParam("team_id") teamId: String,
                                     @RequestParam("team_domain") teamDomain: String,
@@ -245,9 +259,9 @@ class SlackSlashCommand(
     }
 
 
-    @RequestMapping(value = "/slack/accept",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/accept"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveAcceptCommand(@RequestParam("token") token: String,
                                @RequestParam("team_id") teamId: String,
                                @RequestParam("team_domain") teamDomain: String,
@@ -268,9 +282,9 @@ class SlackSlashCommand(
         return message
     }
 
-    @RequestMapping(value = "/slack/decline",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/decline"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveDeclineCommand(@RequestParam("token") token: String,
                                 @RequestParam("team_id") teamId: String,
                                 @RequestParam("team_domain") teamDomain: String,
@@ -290,8 +304,8 @@ class SlackSlashCommand(
     }
 
     @RequestMapping(value = "/slack/release",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveReleaseCommand(@RequestParam("token") token: String,
                                 @RequestParam("team_id") teamId: String,
                                 @RequestParam("team_domain") teamDomain: String,
@@ -310,9 +324,9 @@ class SlackSlashCommand(
 
     }
 
-    @RequestMapping(value = "/slack/pick",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/pick"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceivePickCommand(@RequestParam("token") token: String,
                              @RequestParam("team_id") teamId: String,
                              @RequestParam("team_domain") teamDomain: String,
@@ -334,9 +348,9 @@ class SlackSlashCommand(
 
     }
 
-    @RequestMapping(value = "/slack/pick-today",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/pick-today"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceivePickTodayCommand(@RequestParam("token") token: String,
                              @RequestParam("team_id") teamId: String,
                              @RequestParam("team_domain") teamDomain: String,
@@ -358,9 +372,9 @@ class SlackSlashCommand(
 
     }
 
-    @RequestMapping(value = "/slack/today",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/today"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveTodayCommand(@RequestParam("token") token: String,
                                     @RequestParam("team_id") teamId: String,
                                     @RequestParam("team_domain") teamDomain: String,
@@ -383,9 +397,9 @@ class SlackSlashCommand(
         return message
     }
 
-    @RequestMapping(value = "/slack/planning",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/planning"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceivePlanningCommand(@RequestParam("token") token: String,
                               @RequestParam("team_id") teamId: String,
                               @RequestParam("team_domain") teamDomain: String,
@@ -416,9 +430,9 @@ class SlackSlashCommand(
         return message
     }
 
-    @RequestMapping(value = "/slack/request",
-            method = arrayOf(RequestMethod.POST),
-            consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @RequestMapping(value = ["/slack/request"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
     fun onReceiveRequestCommand(@RequestParam("token") token: String,
                                  @RequestParam("team_id") teamId: String,
                                  @RequestParam("team_domain") teamDomain: String,
@@ -433,6 +447,29 @@ class SlackSlashCommand(
         try {
             drawService.request(userId, text)
             val message = Message("Your request for a spot for the day (${text}) is recorded.")
+            return message
+        } catch (iae: IllegalArgumentException) {
+            return Message(iae.message)
+        }
+    }
+
+    @RequestMapping(value = ["/slack/cancelrequest"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
+    fun onReceiveCancelRequestCommand(@RequestParam("token") token: String,
+                                @RequestParam("team_id") teamId: String,
+                                @RequestParam("team_domain") teamDomain: String,
+                                @RequestParam("channel_id") channelId: String,
+                                @RequestParam("channel_name") channelName: String,
+                                @RequestParam("user_id") userId: String,
+                                @RequestParam("user_name") userName: String,
+                                @RequestParam("command") command: String,
+                                @RequestParam("text") text: String,
+                                @RequestParam("response_url") responseUrl: String): Message {
+
+        try {
+            drawService.cancelrequest(userId)
+            val message = Message("Your request is cancelled.")
             return message
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
