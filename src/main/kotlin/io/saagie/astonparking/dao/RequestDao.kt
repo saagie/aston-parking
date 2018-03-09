@@ -6,6 +6,6 @@ import java.time.LocalDate
 
 interface RequestDao : MongoRepository<Request, String> {
     fun findByUserId(userId: String): List<Request>?
-    fun deleteBySubmitDateBefore(date: LocalDate)
+    fun deleteByDateBefore(date: LocalDate)
     fun findByDate(date: LocalDate): List<Request>?
 }

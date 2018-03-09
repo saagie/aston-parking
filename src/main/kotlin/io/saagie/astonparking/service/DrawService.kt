@@ -34,7 +34,7 @@ class DrawService(
 
     @Scheduled(cron = "0 0 0 * * *")
     fun resetRequest() {
-        requestDao.deleteBySubmitDateBefore(LocalDate.now())
+        requestDao.deleteByDateBefore(LocalDate.now())
     }
 
     @Scheduled(cron = "0 0 10 * * SUN")
