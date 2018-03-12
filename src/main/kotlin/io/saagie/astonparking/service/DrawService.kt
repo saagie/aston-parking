@@ -178,13 +178,16 @@ class DrawService(
                 schedule = scheduleDao.findByDate(it.day)!!
             }
             schedule.userSelected.add(user.id!!)
-            schedule.assignedSpots.add(
-                    ScheduleSpot(
-                            spotNumber = it.spotNumber,
-                            userId = user.id,
-                            username = user.username,
-                            acceptDate = LocalDateTime.now())
-            )
+            val spotNumber = it.spotNumber
+            if (schedule.assignedSpots.count { it.spotNumber==spotNumber }==0) {
+                schedule.assignedSpots.add(
+                        ScheduleSpot(
+                                spotNumber = spotNumber,
+                                userId = user.id,
+                                username = user.username,
+                                acceptDate = LocalDateTime.now())
+                )
+            }
             scheduleDao.save(schedule)
             propositionDao.delete(it.id!!)
             user.incrementAttribution()
