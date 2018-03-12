@@ -145,7 +145,7 @@ class DrawServiceTest {
     fun should_make_attributions() {
         //Given
         //When
-        drawService.attribution()
+        drawService.attribution(null)
         //Then
         verify(propositionDao, times(1)).save(Mockito.anyListOf(Proposition::class.java))
         verify(emailService, times(1)).proposition(Mockito.anyListOf(Proposition::class.java), Mockito.anyListOf(User::class.java))

@@ -28,7 +28,7 @@ class DrawService(
     fun scheduleAttribution() {
         userService.resetAllSelectedAttribution()
         propositionDao.deleteAll()
-        this.attribution()
+        this.attribution(null)
         this.fixedSpots()
     }
 
@@ -57,11 +57,13 @@ class DrawService(
     }
 
     @Async
-    fun attribution() {
+    fun attribution(spotNumber: Int?) {
         val sortedActiveUsers = sortAndFilterUsers().filter { it.alreadySelected == false }
         val nextMonday = getNextMonday(LocalDate.now())
-        val availableSpots = spotService.getAllSpots(State.FREE)
-
+        var availableSpots = spotService.getAllSpots(State.FREE)
+        if (spotNumber!=null){
+            availableSpots= availableSpots!!.filter { it.number==spotNumber }
+        }
         val userIterator = sortedActiveUsers.iterator()
         val propositions = arrayListOf<Proposition>()
         availableSpots!!.forEach {
@@ -195,7 +197,7 @@ class DrawService(
         val propositions = propositionDao.findAll()
         val props = propositions.filter { it.userId == userId }
         propositionDao.delete(props)
-        this.attribution()
+        this.attribution(props.first().spotNumber)
     }
 
     fun getCurrentSchedules(): List<Schedule> {

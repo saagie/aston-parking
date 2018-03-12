@@ -13,7 +13,7 @@ class DrawController(val drawService: DrawService) : SecurityController {
     @PostMapping("/draw")
     @ResponseStatus(HttpStatus.OK)
     fun makeADraw() {
-        drawService.attribution()
+        drawService.attribution(null)
     }
 
     @PostMapping("/accept")
