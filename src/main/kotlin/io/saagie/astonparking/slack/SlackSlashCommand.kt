@@ -317,10 +317,16 @@ class SlackSlashCommand(
                                 @RequestParam("text") text: String,
                                 @RequestParam("response_url") responseUrl: String): Message {
 
-        drawService.release(userId, text)
+        try {
+            drawService.extractDate(text)
+            drawService.release(userId, text)
 
-        val message = Message("You have release the spot for the day (${text}) and it will be reaffected to another. Thanks.")
-        return message
+            val message = Message("You have release the spot for the day (${text}). Another can now pick it. Thanks.")
+            return message
+
+        } catch (iae: IllegalArgumentException) {
+            return Message(iae.message)
+        }
 
     }
 

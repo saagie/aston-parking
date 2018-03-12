@@ -248,7 +248,7 @@ class DrawService(
         return false
     }
 
-    private fun extractDate(text: String): LocalDate {
+    fun extractDate(text: String): LocalDate {
         val now = LocalDate.now()
         try {
             val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
