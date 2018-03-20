@@ -213,7 +213,7 @@ class SlackSlashCommand(
             if (index>size){
                 chance="<10%"
             }else {
-                chance="~${DecimalFormat("0.##").format((index/size)*100)}%"
+                chance="~${DecimalFormat("###.##").format((index/size)*100)}%"
             }
 
             val attachments = arrayOf(
