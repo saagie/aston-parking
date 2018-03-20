@@ -2,7 +2,9 @@ package io.saagie.astonparking.slack
 
 import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.domain.Proposition
+import io.saagie.astonparking.domain.State
 import io.saagie.astonparking.service.DrawService
+import io.saagie.astonparking.service.SpotService
 import io.saagie.astonparking.service.UserService
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.Message
@@ -13,15 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.ArrayList
+import kotlin.math.round
 
 
 @RestController
 class SlackSlashCommand(
         val userService: UserService,
         val drawService: DrawService,
+        val spotService: SpotService,
         val slackBot: SlackBot,
         val requestDao: RequestDao
 ) {
@@ -198,6 +203,19 @@ class SlackSlashCommand(
             if (request!=null && request.isNotEmpty()){
                 requestMessage = request.first().date.format(DateTimeFormatter.ofPattern("dd/MM"))
             }
+
+            val users = drawService.sortAndFilterUsers()
+            val index = users.indexOfFirst { it.id == userId }
+            val allSpots = spotService.getAllSpots(State.FREE)
+
+            var chance="<10%"
+            val size = allSpots!!.size
+            if (index>size){
+                chance="<10%"
+            }else {
+                chance="~${DecimalFormat("0.##").format((index/size)*100)}%"
+            }
+
             val attachments = arrayOf(
                     Attachment().apply {
                         setText("Username : ${user.username}")
@@ -213,6 +231,9 @@ class SlackSlashCommand(
                     },
                     Attachment().apply {
                         setText("Pending request :  ${requestMessage}")
+                    },
+                    Attachment().apply {
+                        setText("Chance of being selected :  ${chance}")
                     }
             )
             richMessage.attachments = attachments
