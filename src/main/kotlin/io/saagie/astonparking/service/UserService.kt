@@ -1,16 +1,24 @@
 package io.saagie.astonparking.service
 
+import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.dao.UserDao
+
+
 import io.saagie.astonparking.domain.User
 import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import java.util.function.Consumer
-
-
 @Service
 class UserService(
         val userDao: UserDao,
-        val emailService: EmailService) {
+        val emailService: EmailService,
+        val drawService: DrawService,
+        val scheduleDao: ScheduleDao) {
 
     fun registerUser(username: String, id: String): Boolean {
         if (!userDao.exists(id)) {
@@ -20,6 +28,29 @@ class UserService(
         return false
     }
 
+    @Scheduled(cron = "0 0 9 * * MON")
+    fun removeUnregisterUser(){
+        val users = userDao.findByUnregister(true)
+        users.forEach {
+            val userId=it.id
+            userDao.delete(userId)
+            val date = LocalDate.now()
+            val schedules = scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
+            schedules.filter({it.assignedSpots.map {it.userId}.contains(userId)}).forEach {
+                val dateFormat = date.format(DateTimeFormatter.ofPattern("dd/MM"))
+                drawService.release(userId!!,dateFormat)
+            }
+            scheduleDao.save(schedules)
+        }
+    }
+
+
+    fun unregisterUser(userId: String):Boolean {
+        val user = userDao.findOne(userId)
+        user.unregister=!user.unregister
+        userDao.save(user)
+        return user.unregister
+    }
 
     fun updateUserInfo(map: Map<String, Any>) {
         val userMap = map.get("user") as Map<*, *>

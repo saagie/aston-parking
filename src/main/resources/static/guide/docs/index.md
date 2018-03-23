@@ -41,6 +41,7 @@ Voici la liste de toutes les commandes possibles :
 
 * `/ap-command` - Affiche la liste de toutes les commandes.
 * `/ap-register` - Permet l'enregistrement à l'application.
+* `/ap-unregister` - Lance la suppression du compte.
 * `/ap-profile` - Affiche le profile et ses infos.
 * `/ap-attribution` - Affiche la liste des propositions d'affection pour la semaine suivante et les attribution pour la semaine en cours.
 * `/ap-planning` - Affiche son planning pour la semaine en cours et la semaine suivante.

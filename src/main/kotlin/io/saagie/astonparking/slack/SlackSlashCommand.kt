@@ -56,6 +56,9 @@ class SlackSlashCommand(
                     setText("/ap-register : to register you as a new member of Aston Parking")
                 },
                 Attachment().apply {
+                    setText("/ap-unregister : to unregister your account")
+                },
+                Attachment().apply {
                     setText("/ap-profile : to display your AstonParking profile")
                 },
                 Attachment().apply {
@@ -126,6 +129,28 @@ class SlackSlashCommand(
 
 
         return richMessage.encodedMessage()
+    }
+
+    @RequestMapping(value = ["/slack/unregister"],
+            method = [(RequestMethod.POST)],
+            consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
+    fun onReceiveUnregisterCommand(@RequestParam("token") token: String,
+                                 @RequestParam("team_id") teamId: String,
+                                 @RequestParam("team_domain") teamDomain: String,
+                                 @RequestParam("channel_id") channelId: String,
+                                 @RequestParam("channel_name") channelName: String,
+                                 @RequestParam("user_id") userId: String,
+                                 @RequestParam("user_name") userName: String,
+                                 @RequestParam("command") command: String,
+                                 @RequestParam("text") text: String,
+                                 @RequestParam("response_url") responseUrl: String): Message {
+        val unregisterUser = userService.unregisterUser(userId)
+
+        var message = Message("Next monday, your account will be remove. If you want to cancel this request, type /ap-unregister again.")
+        if (!unregisterUser){
+            message = Message("Your account will NOT be remove.")
+        }
+        return message
     }
 
     @RequestMapping(value = ["/slack/profile/active"],

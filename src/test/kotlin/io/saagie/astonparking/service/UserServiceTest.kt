@@ -1,6 +1,7 @@
 package io.saagie.astonparking.service
 
 import com.nhaarman.mockito_kotlin.*
+import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.dao.UserDao
 import io.saagie.astonparking.domain.User
 import org.amshove.kluent.*
@@ -30,7 +31,15 @@ class UserServiceTest {
 
     }
 
-    val userService = UserService(userDao, emailService)
+    val drawService: DrawService = mock<DrawService> {
+
+    }
+
+    val scheduleDao: ScheduleDao = mock<ScheduleDao> {
+
+    }
+
+    val userService = UserService(userDao, emailService, drawService,scheduleDao)
 
     @Test
     fun should_return_an_existing_user() {
@@ -164,6 +173,25 @@ class UserServiceTest {
         verify(userDao, times(1)).findAll()
         verify(userDao, times(allUser.size)).save(userCaptor.capture())
         userCaptor.allValues.map { it.alreadySelected } `should contain` false
+    }
+
+    @Test
+    fun should_unregister_user(){
+        //Given
+        //When
+        val unregisterUser = userService.unregisterUser(allUser.first().id!!)
+        //Then
+        unregisterUser `should be equal to` true
+    }
+
+    @Test
+    fun should_cancel_unregister_user(){
+        //Given
+        userService.unregisterUser(allUser.first().id!!)
+        //When
+        val unregisterUser = userService.unregisterUser(allUser.first().id!!)
+        //Then
+        unregisterUser `should be equal to` false
     }
 
     private fun initAllUser(): List<User> {
