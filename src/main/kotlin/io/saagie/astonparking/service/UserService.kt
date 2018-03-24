@@ -16,9 +16,7 @@ import java.util.function.Consumer
 @Service
 class UserService(
         val userDao: UserDao,
-        val emailService: EmailService,
-        val drawService: DrawService,
-        val scheduleDao: ScheduleDao) {
+        val emailService: EmailService) {
 
     fun registerUser(username: String, id: String): Boolean {
         if (!userDao.exists(id)) {
@@ -26,22 +24,6 @@ class UserService(
             return true
         }
         return false
-    }
-
-    @Scheduled(cron = "0 0 9 * * MON")
-    fun removeUnregisterUser(){
-        val users = userDao.findByUnregister(true)
-        users.forEach {
-            val userId=it.id
-            userDao.delete(userId)
-            val date = LocalDate.now()
-            val schedules = scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
-            schedules.filter({it.assignedSpots.map {it.userId}.contains(userId)}).forEach {
-                val dateFormat = date.format(DateTimeFormatter.ofPattern("dd/MM"))
-                drawService.release(userId!!,dateFormat)
-            }
-            scheduleDao.save(schedules)
-        }
     }
 
 
@@ -118,5 +100,8 @@ class UserService(
                             userDao.save(it)
                         })
     }
+
+    fun findByUnregister(unregister: Boolean) = userDao.findByUnregister(unregister)
+    fun delete(userId: String) = userDao.delete(userId)
 
 }

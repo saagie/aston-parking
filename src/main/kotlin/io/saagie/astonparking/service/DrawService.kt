@@ -32,6 +32,22 @@ class DrawService(
         this.fixedSpots()
     }
 
+    @Scheduled(cron = "0 0 9 * * MON")
+    fun removeUnregisterUser(){
+        val users = userService.findByUnregister(true)
+        users.forEach {
+            val userId=it.id
+            userService.delete(userId!!)
+            val date = LocalDate.now()
+            val schedules = scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
+            schedules.filter({it.assignedSpots.map {it.userId}.contains(userId)}).forEach {
+                val dateFormat = date.format(DateTimeFormatter.ofPattern("dd/MM"))
+                release(userId,dateFormat)
+            }
+            scheduleDao.save(schedules)
+        }
+    }
+
     @Scheduled(cron = "0 0 0 * * *")
     fun resetRequest() {
         requestDao.deleteByDateBefore(LocalDate.now())

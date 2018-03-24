@@ -31,15 +31,8 @@ class UserServiceTest {
 
     }
 
-    val drawService: DrawService = mock<DrawService> {
 
-    }
-
-    val scheduleDao: ScheduleDao = mock<ScheduleDao> {
-
-    }
-
-    val userService = UserService(userDao, emailService, drawService,scheduleDao)
+    val userService = UserService(userDao, emailService)
 
     @Test
     fun should_return_an_existing_user() {
