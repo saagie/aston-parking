@@ -6,6 +6,7 @@ services:
 jdk:
   - oraclejdk8
 script:
+   - ./gradlew mkdocsBuild
    - ./gradlew assemble
    - ./gradlew check
    - ./gradlew docker
