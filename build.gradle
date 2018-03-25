@@ -7,12 +7,14 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        jcenter()
     }
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2")
+        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.0.0'
 	}
 }
 
@@ -21,9 +23,10 @@ apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: "com.palantir.docker"
+apply plugin: 'ru.vyarus.mkdocs'
 
 group = 'io.saagie'
-version = '1.1.12.1'
+version = '1.1.13'
 sourceCompatibility = 1.8
 compileKotlin {
 	kotlinOptions {
@@ -41,6 +44,7 @@ compileTestKotlin {
 repositories {
     jcenter()
 }
+
 
 ext.jacksonModuleVersion="2.9.4.1"
 ext.jbotVersion="3.0.2"
@@ -81,3 +85,7 @@ docker {
     buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
 
+mkdocs {
+    sourcesDir = 'src/main/guide'
+    buildDir= 'src/main/resources/static/guide'
+}
