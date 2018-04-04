@@ -66,12 +66,12 @@ class DrawServiceTest {
 
     }
 
-    val requestDao = mock<RequestDao>{
-        on {findByUserId("ID1")} `it returns` null
-        on {findByUserId("ID2")} `it returns` listOf(Request(id="RQ1",date = LocalDate.now(),userId = "ID2",submitDate = LocalDateTime.now()))
+    val requestDao = mock<RequestDao> {
+        on { findByUserId("ID1") } `it returns` null
+        on { findByUserId("ID2") } `it returns` listOf(Request(id = "RQ1", date = LocalDate.now(), userId = "ID2", submitDate = LocalDateTime.now()))
     }
 
-    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao,requestDao)
+    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao, requestDao)
 
     @Test
     fun should_return_the_list_of_active_users_in_the_right_order() {
@@ -174,7 +174,7 @@ class DrawServiceTest {
     }
 
     @Test
-    fun should_add_request(){
+    fun should_add_request() {
         //Given
         //When
         val date = LocalDate.now().plusDays(1)
@@ -184,18 +184,26 @@ class DrawServiceTest {
     }
 
     @Test
-    fun should_not_add_request(){
+    fun should_not_add_request() {
         //Given
         //When
         try {
             val date = LocalDate.now().minusDays(1)
             drawService.request("ID2", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
             fail("Should return an exception")
-        }catch (e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             verify(requestDao, never()).save(Mockito.any(Request::class.java))
         }
     }
 
+    @Test
+    fun should_reset_user_counter() {
+        //Given
+        //When
+        drawService.resetAllScores()
+        //Then
+        verify(userService, times(1)).saveall(any())
+    }
 
     private fun initAllUser(): List<User> {
         return arrayListOf<User>(

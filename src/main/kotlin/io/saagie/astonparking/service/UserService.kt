@@ -92,6 +92,11 @@ class UserService(
         userDao.save(user)
     }
 
+    fun saveall(users: List<User>) {
+        userDao.save(users)
+    }
+
+
     fun resetAllSelectedAttribution() {
         userDao.findAll()
                 .forEach(

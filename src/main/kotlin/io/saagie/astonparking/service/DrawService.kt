@@ -24,7 +24,7 @@ class DrawService(
         val requestDao: RequestDao
 ) {
 
-    @Scheduled(cron = "0 0 10 * * MON")
+    @Scheduled(cron = "0 0 8 * * MON")
     fun scheduleAttribution() {
         userService.resetAllSelectedAttribution()
         propositionDao.deleteAll()
@@ -32,7 +32,7 @@ class DrawService(
         this.fixedSpots()
     }
 
-    @Scheduled(cron = "0 0 9 * * MON")
+    @Scheduled(cron = "0 0 7 * * MON")
     fun removeUnregisterUser(){
         val users = userService.findByUnregister(true)
         users.forEach {
@@ -53,7 +53,7 @@ class DrawService(
         requestDao.deleteByDateBefore(LocalDate.now())
     }
 
-    @Scheduled(cron = "0 0 10 * * SUN")
+    @Scheduled(cron = "0 0 8 * * SUN")
     fun cleanAttributions() {
         val propositions = propositionDao.findAll()
         propositions.forEach({
@@ -70,6 +70,12 @@ class DrawService(
             scheduleDao.save(schedule)
         })
         propositionDao.deleteAll()
+    }
+
+    @Scheduled(cron = "0 0 0 1 6 *")
+    fun resetAllScores(){
+        val allUsers = userService.getAll()
+        userService.saveall(allUsers.map { it.apply { attribution = 0 } })
     }
 
     @Async
