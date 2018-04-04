@@ -33,16 +33,16 @@ class DrawService(
     }
 
     @Scheduled(cron = "0 0 7 * * MON")
-    fun removeUnregisterUser(){
+    fun removeUnregisterUser() {
         val users = userService.findByUnregister(true)
         users.forEach {
-            val userId=it.id
+            val userId = it.id
             userService.delete(userId!!)
             val date = LocalDate.now()
             val schedules = scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
-            schedules.filter({it.assignedSpots.map {it.userId}.contains(userId)}).forEach {
+            schedules.filter({ it.assignedSpots.map { it.userId }.contains(userId) }).forEach {
                 val dateFormat = date.format(DateTimeFormatter.ofPattern("dd/MM"))
-                release(userId,dateFormat)
+                release(userId, dateFormat)
             }
             scheduleDao.save(schedules)
         }
@@ -73,7 +73,7 @@ class DrawService(
     }
 
     @Scheduled(cron = "0 0 0 1 6 *")
-    fun resetAllScores(){
+    fun resetAllScores() {
         val allUsers = userService.getAll()
         userService.saveall(allUsers.map { it.apply { attribution = 0 } })
     }
@@ -83,8 +83,8 @@ class DrawService(
         val sortedActiveUsers = sortAndFilterUsers().filter { it.alreadySelected == false }
         val nextMonday = getNextMonday(LocalDate.now())
         var availableSpots = spotService.getAllSpots(State.FREE)
-        if (spotNumber!=null){
-            availableSpots= availableSpots!!.filter { it.number==spotNumber }
+        if (spotNumber != null) {
+            availableSpots = availableSpots!!.filter { it.number == spotNumber }
         }
         val userIterator = sortedActiveUsers.iterator()
         val propositions = arrayListOf<Proposition>()
@@ -201,7 +201,7 @@ class DrawService(
             }
             schedule.userSelected.add(user.id!!)
             val spotNumber = it.spotNumber
-            if (schedule.assignedSpots.count { it.spotNumber==spotNumber }==0) {
+            if (schedule.assignedSpots.count { it.spotNumber == spotNumber } == 0) {
                 schedule.assignedSpots.add(
                         ScheduleSpot(
                                 spotNumber = spotNumber,
@@ -226,11 +226,11 @@ class DrawService(
     }
 
     fun getCurrentSchedules(): List<Schedule> {
-        return getSchedules(this.getNextMonday(java.time.LocalDate.now()).minusDays(7))
+        return getSchedules(this.getNextMonday(LocalDate.now()).minusDays(7))
     }
 
     fun getNextSchedules(): List<Schedule> {
-        return getSchedules(this.getNextMonday(java.time.LocalDate.now()))
+        return getSchedules(this.getNextMonday(LocalDate.now()))
     }
 
     fun getSchedules(date: LocalDate): List<Schedule> {
@@ -248,23 +248,34 @@ class DrawService(
             schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
         }
         scheduleDao.save(schedule)
-        user.attribution = user.attribution - 1
-        userService.save(user)
+        if (releaseIsOkToDecrementAttribution(date)) {
+            user.attribution = user.attribution - 1
+            userService.save(user)
+        }
         if (!checkAndPickIfRequest(date)) {
             slackBot.spotRelease(date)
         }
     }
 
+    private fun releaseIsOkToDecrementAttribution(date: LocalDate): Boolean {
+        val now = LocalDate.now()
+        val localDateTime = LocalDateTime.now()
+        when {
+            now != date -> return true
+            else -> return (localDateTime.hour < 8)
+        }
+    }
+
     private fun checkAndPickIfRequest(date: LocalDate): Boolean {
         val request = requestDao.findByDate(date)
-        if (request!=null && request.isNotEmpty()){
+        if (request != null && request.isNotEmpty()) {
             val winner = request.sortedBy { it.submitDate }.first()
-            val spot = pick(winner.userId,date)
+            val spot = pick(winner.userId, date)
             val user = userService.get(winner.userId)
-            user.attribution+=1
+            user.attribution += 1
             userService.save(user)
             requestDao.delete(winner.id!!)
-            emailService.pickAfterRequest(userService.get(winner.userId),spot,date)
+            emailService.pickAfterRequest(userService.get(winner.userId), spot, date)
             return true
         }
         return false
@@ -285,7 +296,8 @@ class DrawService(
 
     fun pick(userId: String, date: LocalDate): Int {
         val user = userService.get(userId)
-        val schedule = scheduleDao.findByDate(date) ?: throw IllegalArgumentException("No schedule for the date ${date}")
+        val schedule = scheduleDao.findByDate(date)
+                ?: throw IllegalArgumentException("No schedule for the date ${date}")
         if (schedule.freeSpots.isEmpty())
             throw IllegalArgumentException("No free spot for the date ${date}")
         if (schedule.assignedSpots.count { it.userId == userId } > 0)
@@ -323,12 +335,12 @@ class DrawService(
                         date = date,
                         submitDate = LocalDateTime.now())
         )
-        slackBot.requestCreated(userService.get(userId),date)
+        slackBot.requestCreated(userService.get(userId), date)
     }
 
     fun cancelrequest(userId: String) {
         val request = requestDao.findByUserId(userId)
-        if (request!=null && request.isNotEmpty()){
+        if (request != null && request.isNotEmpty()) {
             requestDao.delete(request.first().id)
         }
     }
