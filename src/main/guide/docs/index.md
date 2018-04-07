@@ -1,5 +1,5 @@
 # Guide d'utilisation d'Aston Parking
-TEST
+
 ## Aston Parking, c'est quoi ? 
 
 Aston Parking est un outils de gestion des places de parking utilisé en interne chez [Saagie](http://saagie.com). Elle permet l'attribution automatique et équitable entre tous les participants, ainsi qu'un système d'échange. 
