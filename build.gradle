@@ -85,6 +85,11 @@ docker {
     buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
 
+mkdocs.publish {
+    docPath = 'site'
+    rootRedirect = false
+}
+
 mkdocs {
     sourcesDir = 'src/main/guide'
     buildDir= 'src/main/resources/static/guide'
