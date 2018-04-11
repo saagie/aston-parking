@@ -4,6 +4,7 @@ import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
+import io.saagie.astonparking.rule.DrawRules
 import io.saagie.astonparking.slack.SlackBot
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
@@ -15,6 +16,7 @@ import java.time.format.DateTimeParseException
 
 @Service
 class DrawService(
+        val drawRules: DrawRules,
         val userService: UserService,
         val spotService: SpotService,
         val emailService: EmailService,
@@ -80,7 +82,7 @@ class DrawService(
 
     @Async
     fun attribution(spotNumber: Int?) {
-        val sortedActiveUsers = sortAndFilterUsers().filter { it.alreadySelected == false }
+        val sortedActiveUsers = drawRules.sortAndFilterUsers().filter { it.alreadySelected == false }
         val nextMonday = getNextMonday(LocalDate.now())
         var availableSpots = spotService.getAllSpots(State.FREE)
         if (spotNumber != null) {
@@ -136,8 +138,8 @@ class DrawService(
     fun generateAllProposition(number: Int, userId: String, nextMonday: LocalDate): List<Proposition> {
         val listProps = arrayListOf<Proposition>()
         for (i in 0L..4L) {
-            if (!spotAlreadyProposed(number, nextMonday.plusDays(i)) &&
-                    !spotAlreadySchedule(number, nextMonday.plusDays(i))) {
+            if (!drawRules.spotAlreadyProposed(number, nextMonday.plusDays(i)) &&
+                    !drawRules.spotAlreadySchedule(number, nextMonday.plusDays(i))) {
                 listProps.add(
                         Proposition(
                                 spotNumber = number,
@@ -149,27 +151,12 @@ class DrawService(
         return listProps
     }
 
-    private fun spotAlreadyProposed(number: Int, date: LocalDate?): Boolean {
-        val propositions = propositionDao.findAll()
-        return propositions != null && propositions.filter { it.spotNumber == number && it.day == date }.isNotEmpty()
-    }
 
-    private fun spotAlreadySchedule(number: Int, date: LocalDate): Boolean {
-        val schedule = scheduleDao.findByDate(date)
-        return schedule != null && schedule.assignedSpots.filter { it.spotNumber == number }.isNotEmpty()
-
-    }
 
     fun getNextMonday(d: LocalDate): LocalDate {
         return d.plusDays((8 - d.dayOfWeek.value).toLong())
     }
 
-    fun sortAndFilterUsers(): List<User> {
-        return userService
-                .getAllActive()
-                .filter { !it.hasFixedSpot }
-                .sortedBy { it.attribution }
-    }
 
     fun getAllPropositions(): ArrayList<Proposition>? {
         return propositionDao.findAll() as ArrayList<Proposition>?
@@ -248,7 +235,7 @@ class DrawService(
             schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
         }
         scheduleDao.save(schedule)
-        if (releaseIsOkToDecrementAttribution(date)) {
+        if (drawRules.checkIfDateIsOk(date)) {
             user.attribution = user.attribution - 1
             userService.save(user)
         }
@@ -257,14 +244,6 @@ class DrawService(
         }
     }
 
-    private fun releaseIsOkToDecrementAttribution(date: LocalDate): Boolean {
-        val now = LocalDate.now()
-        val localDateTime = LocalDateTime.now()
-        when {
-            now != date -> return true
-            else -> return (localDateTime.hour < 8)
-        }
-    }
 
     private fun checkAndPickIfRequest(date: LocalDate): Boolean {
         val request = requestDao.findByDate(date)
