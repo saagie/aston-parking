@@ -7,6 +7,7 @@ import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
+import io.saagie.astonparking.rule.DrawRules
 import io.saagie.astonparking.slack.SlackBot
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should be`
@@ -71,16 +72,12 @@ class DrawServiceTest {
         on { findByUserId("ID2") } `it returns` listOf(Request(id = "RQ1", date = LocalDate.now(), userId = "ID2", submitDate = LocalDateTime.now()))
     }
 
-    val drawService = DrawService(userService, spotService, emailService, slackBot, propositionDao, scheduleDao, requestDao)
-
-    @Test
-    fun should_return_the_list_of_active_users_in_the_right_order() {
-        //Given
-        //When
-        val users = drawService.sortAndFilterUsers()
-        //Then
-        users.map { u -> u.attribution } shouldEqual listOf(0, 2, 3, 4)
+    val drawRules = mock<DrawRules> {
+        on { sortAndFilterUsers()} `it returns` allUsers
     }
+
+    val drawService = DrawService(drawRules,userService, spotService, emailService, slackBot, propositionDao, scheduleDao, requestDao)
+
 
     @Test
     fun should_return_the_next_monday() {
@@ -176,8 +173,8 @@ class DrawServiceTest {
     @Test
     fun should_add_request() {
         //Given
-        //When
         val date = LocalDate.now().plusDays(1)
+        //When
         drawService.request("ID1", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
         //Then
         verify(requestDao, times(1)).save(Mockito.any(Request::class.java))
@@ -186,9 +183,9 @@ class DrawServiceTest {
     @Test
     fun should_not_add_request() {
         //Given
+        val date = LocalDate.now().minusDays(1)
         //When
         try {
-            val date = LocalDate.now().minusDays(1)
             drawService.request("ID2", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
             fail("Should return an exception")
         } catch (e: IllegalArgumentException) {
