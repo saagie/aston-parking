@@ -11,6 +11,8 @@ addons:
     packages:
       - "python3"
       - "python3-pip"
+before_install:
+  - /usr/bin/env python3 -m pip intall --user --upgrade pip
 
 script:
    - ./gradlew mkdocsBuild
