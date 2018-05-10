@@ -31,6 +31,10 @@ apply plugin: 'ru.vyarus.mkdocs'
     termsOfServiceAgree = 'yes'
 }*/
 
+python.pip 'module1:2.0', 'module2:1.0', 'module1:1.0'
+python.installVirtualenv = false
+python.scope = USER
+
 group = 'io.saagie'
 version = "1.1.$System.env.TRAVIS_BUILD_NUMBER"
 sourceCompatibility = 1.8

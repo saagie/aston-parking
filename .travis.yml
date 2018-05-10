@@ -13,6 +13,7 @@ addons:
       - "python3-pip"
 before_install:
   - /usr/bin/env python3 -m pip install --user pip==9.0.1
+  - /usr/bin/env python3 -m virtualenv .gradle/python
 
 script:
    - ./gradlew mkdocsBuild
