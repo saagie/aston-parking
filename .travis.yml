@@ -12,13 +12,13 @@ addons:
       - "python3"
       - "python3-pip"
 before_install:
-  - /usr/bin/env python3 -m pip install --user --upgrade pip
+  - /usr/bin/env python3 -m pip install --user pip==9.0.1
 
 script:
-   - ./gradlew mkdocsBuild
-   - ./gradlew assemble
-   - ./gradlew check
-   - ./gradlew docker
+   - ./gradlew mkdocsBuild --scan
+   - ./gradlew assemble --scan
+   - ./gradlew check --scan
+   - ./gradlew docker --scan
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
