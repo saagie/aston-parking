@@ -11,7 +11,7 @@ before_install:
   - sudo pip3 install -U pip
 
 script:
-   - ./gradlew mkdocsBuild
+#   - ./gradlew mkdocsBuild
    - ./gradlew assemble
    - ./gradlew check
    - ./gradlew docker
