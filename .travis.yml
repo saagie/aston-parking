@@ -11,15 +11,16 @@ addons:
     packages:
       - "python3"
       - "python3-pip"
+
 before_install:
   - /usr/bin/env python3 -m pip install --user pip virtualenv
   - /usr/bin/env python3 -m virtualenv .gradle/python
 
 script:
-   - ./gradlew mkdocsBuild
-   - ./gradlew assemble
-   - ./gradlew check
-   - ./gradlew docker
+   - ./gradlew mkdocsBuild --scan
+   - ./gradlew assemble --scan
+   - ./gradlew check --scan
+   - ./gradlew docker --scan
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
