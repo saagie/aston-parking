@@ -301,8 +301,15 @@ class DrawService(
 
     fun pick(userId: String, text: String) = pick(userId, extractDate(text))
 
-    fun request(userId: String, text: String) {
+    fun request(userId: String, text: String): Int? {
         val date = extractDate(text)
+
+        try {
+            val spot = pick(userId,date)
+            return spot
+        }catch(iae : IllegalArgumentException){
+            //Do nothing
+        }
 
         val requests = requestDao.findByUserId(userId)
         if (requests != null && requests.isNotEmpty()) {
@@ -315,6 +322,7 @@ class DrawService(
                         submitDate = LocalDateTime.now())
         )
         slackBot.requestCreated(userService.get(userId), date)
+        return null
     }
 
     fun cancelrequest(userId: String) {

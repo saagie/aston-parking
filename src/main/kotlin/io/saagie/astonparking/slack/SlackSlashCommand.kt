@@ -563,7 +563,11 @@ class SlackSlashCommand(
             return Message("No luck man, You're not allowed to do that.")
 
         try {
-            drawService.request(userId, text)
+            val spot = drawService.request(userId, text)
+            if (spot != null) {
+                val message = Message("You have pick the ${spot} for the day (${text}) .")
+                return message
+            }
             val message = Message("Your request for a spot for the day (${text}) is recorded.")
             return message
         } catch (iae: IllegalArgumentException) {
