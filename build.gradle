@@ -1,7 +1,11 @@
 buildscript {
 	ext {
 		kotlinVersion = '1.2.20'
-		springBootVersion = '1.5.10.RELEASE'
+		springBootVersion = '1.5.13.RELEASE'
+        gradleDockerVersion = '0.19.2'
+        buildScanVersion = '1.13.2'
+        gradlePythonPluginVersion = '1.0.2'
+        gradleMkdocsPluginVersion = '1.0.1'
 	}
 	repositories {
         maven {
@@ -13,10 +17,10 @@ buildscript {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
-        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2")
-        classpath "com.gradle:build-scan-plugin:1.13.2"
-        classpath 'ru.vyarus:gradle-use-python-plugin:1.0.2'
-        classpath 'ru.vyarus:gradle-mkdocs-plugin:1.0.0'
+        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:${gradleDockerVersion}")
+        classpath "com.gradle:build-scan-plugin:${buildScanVersion}"
+        classpath("ru.vyarus:gradle-use-python-plugin:${gradlePythonPluginVersion}")
+        classpath("ru.vyarus:gradle-mkdocs-plugin:${gradleMkdocsPluginVersion}")
 	}
 }
 
