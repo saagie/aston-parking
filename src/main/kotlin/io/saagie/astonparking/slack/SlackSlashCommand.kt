@@ -3,6 +3,7 @@ package io.saagie.astonparking.slack
 import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.domain.Proposition
 import io.saagie.astonparking.domain.State
+import io.saagie.astonparking.rule.DrawRules
 import io.saagie.astonparking.service.DrawService
 import io.saagie.astonparking.service.SpotService
 import io.saagie.astonparking.service.UserService
@@ -26,6 +27,7 @@ import kotlin.math.round
 class SlackSlashCommand(
         val userService: UserService,
         val drawService: DrawService,
+        val drawRules: DrawRules,
         val spotService: SpotService,
         val slackBot: SlackBot,
         val requestDao: RequestDao
@@ -33,6 +35,9 @@ class SlackSlashCommand(
 
     @Value("\${url}")
     private val url: String? = null
+
+    @Value("\${slackVerificationToken}")
+    private val slackVerificationToken: String? = null
 
     @RequestMapping(value = ["/slack/command"],
             method = [(RequestMethod.POST)],
@@ -47,6 +52,12 @@ class SlackSlashCommand(
                              @RequestParam("command") command: String,
                              @RequestParam("text") text: String,
                              @RequestParam("response_url") responseUrl: String): RichMessage {
+
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return RichMessage("No luck man, You're not allowed to do that.")
+
+
         val richMessage = RichMessage("---Aston Parking : Available commands--- ")
         val attachments = arrayOf(
                 Attachment().apply {
@@ -117,6 +128,10 @@ class SlackSlashCommand(
                                  @RequestParam("command") command: String,
                                  @RequestParam("text") text: String,
                                  @RequestParam("response_url") responseUrl: String): RichMessage {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return RichMessage("No luck man, You're not allowed to do that.")
+
         val registerUser = userService.registerUser(userName, userId)
         val richMessage = RichMessage("Register : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
@@ -144,6 +159,10 @@ class SlackSlashCommand(
                                  @RequestParam("command") command: String,
                                  @RequestParam("text") text: String,
                                  @RequestParam("response_url") responseUrl: String): Message {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
         val unregisterUser = userService.unregisterUser(userId)
 
         var message = Message("Next monday, your account will be remove. If you want to cancel this request, type /ap-unregister again.")
@@ -166,6 +185,10 @@ class SlackSlashCommand(
                                       @RequestParam("command") command: String,
                                       @RequestParam("text") text: String,
                                       @RequestParam("response_url") responseUrl: String): RichMessage {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return RichMessage("No luck man, You're not allowed to do that.")
+
         userService.changeStatus(userId, true)
         val richMessage = RichMessage("Activate Profile : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
@@ -189,6 +212,11 @@ class SlackSlashCommand(
                                         @RequestParam("command") command: String,
                                         @RequestParam("text") text: String,
                                         @RequestParam("response_url") responseUrl: String): RichMessage {
+
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return RichMessage("No luck man, You're not allowed to do that.")
+
         userService.changeStatus(userId, false)
         val richMessage = RichMessage("Desactivate Profile : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
@@ -213,6 +241,9 @@ class SlackSlashCommand(
                                 @RequestParam("text") text: String,
                                 @RequestParam("response_url") responseUrl: String): RichMessage {
 
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return RichMessage("No luck man, You're not allowed to do that.")
 
         try {
             val user = userService.get(userId)
@@ -229,7 +260,7 @@ class SlackSlashCommand(
                 requestMessage = request.first().date.format(DateTimeFormatter.ofPattern("dd/MM"))
             }
 
-            val users = drawService.sortAndFilterUsers()
+            val users = drawRules.sortAndFilterUsers()
 
             val index = users.indexOfFirst { it.id == userId }
             val allSpots = spotService.getAllSpots(State.FREE)
@@ -286,6 +317,10 @@ class SlackSlashCommand(
                                     @RequestParam("text") text: String,
                                     @RequestParam("response_url") responseUrl: String): Message {
 
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
         val propositions = drawService.getAllPropositions()
         val currentSchedules = drawService.getCurrentSchedules()
         val nextSchedules = drawService.getNextSchedules()
@@ -305,7 +340,6 @@ class SlackSlashCommand(
         return message
     }
 
-
     @RequestMapping(value = ["/slack/accept"],
             method = [(RequestMethod.POST)],
             consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
@@ -320,6 +354,10 @@ class SlackSlashCommand(
                                @RequestParam("text") text: String,
                                @RequestParam("response_url") responseUrl: String): Message {
 
+
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
 
         val message = Message("OK, your propositions are accepted.")
         if (!drawService.acceptProposition(userId)) {
@@ -343,6 +381,10 @@ class SlackSlashCommand(
                                 @RequestParam("text") text: String,
                                 @RequestParam("response_url") responseUrl: String): Message {
 
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
 
         drawService.declineProposition(userId)
 
@@ -363,6 +405,9 @@ class SlackSlashCommand(
                                 @RequestParam("command") command: String,
                                 @RequestParam("text") text: String,
                                 @RequestParam("response_url") responseUrl: String): Message {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
 
         try {
             drawService.extractDate(text)
@@ -391,6 +436,10 @@ class SlackSlashCommand(
                              @RequestParam("text") text: String,
                              @RequestParam("response_url") responseUrl: String): Message {
 
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
         try {
             val spot = drawService.pick(userId, text)
             val message = Message("You have pick the ${spot} for the day (${text}) .")
@@ -414,6 +463,10 @@ class SlackSlashCommand(
                              @RequestParam("command") command: String,
                              @RequestParam("text") text: String,
                              @RequestParam("response_url") responseUrl: String): Message {
+
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
 
         try {
             val spot = drawService.pick(userId, LocalDate.now())
@@ -439,6 +492,10 @@ class SlackSlashCommand(
                                     @RequestParam("text") text: String,
                                     @RequestParam("response_url") responseUrl: String): Message {
 
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
         val currentSchedules = drawService.getCurrentSchedules().filter { it.date == LocalDate.now() }
 
         val message = Message("*******************\n")
@@ -463,6 +520,11 @@ class SlackSlashCommand(
                               @RequestParam("command") command: String,
                               @RequestParam("text") text: String,
                               @RequestParam("response_url") responseUrl: String): Message {
+
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
+
 
         val propositions = drawService.getAllPropositions()!!.filter { it.userId ==  userId}
         val currentSchedules = drawService.getCurrentSchedules()
@@ -496,6 +558,9 @@ class SlackSlashCommand(
                                  @RequestParam("command") command: String,
                                  @RequestParam("text") text: String,
                                  @RequestParam("response_url") responseUrl: String): Message {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
 
         try {
             drawService.request(userId, text)
@@ -519,6 +584,9 @@ class SlackSlashCommand(
                                 @RequestParam("command") command: String,
                                 @RequestParam("text") text: String,
                                 @RequestParam("response_url") responseUrl: String): Message {
+        // validate token
+        if (!token.equals(slackVerificationToken))
+            return Message("No luck man, You're not allowed to do that.")
 
         try {
             drawService.cancelrequest(userId)

@@ -9,6 +9,7 @@ logging:
 url: ${ASTON_PARKING_URL}
 # SLACK BOT
 slackBotToken: ${ASTON_PARKING_SLACKBOT_TOKEN}
+slackVerificationToken: ${ASTON_PARKING_SLACKBOT_VERIFICATION_TOKEN}
 slackWebhookUrl: ${ASTON_PARKING_SLACK_WEBHOOK_URL}
 rtmUrl: "https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads"
 # MAIL
