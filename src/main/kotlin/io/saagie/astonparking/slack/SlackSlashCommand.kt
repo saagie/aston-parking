@@ -410,11 +410,10 @@ class SlackSlashCommand(
             return Message("No luck man, You're not allowed to do that.")
 
         try {
-            drawService.extractDate(text)
-            drawService.release(userId, text)
-
-            val message = Message("You have release the spot for the day (${text}). Another can now pick it. Thanks.")
-            return message
+            if (!drawService.release(userId, text)){
+                return Message("You have release the spot for the day (${text}). *BUT* it's a bit late for anyone to pick it. You'll have a blame in the future. Next time keep in mind that's it's important to release earlier as possible ... Thanks")
+            }
+            return Message("You have release the spot for the day (${text}). Another can now pick it. Thanks.")
 
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
