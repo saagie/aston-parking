@@ -166,9 +166,9 @@ class SlackSlashCommand(
 
         val unregisterUser = userService.unregisterUser(userId)
 
-        var message = Message("Next monday, your account will be remove. If you want to cancel this request, type /ap-unregister again.")
+        var message = Message("Next monday, your account will be removed. If you want to cancel this request, type /ap-unregister again.")
         if (!unregisterUser){
-            message = Message("Your account will NOT be remove.")
+            message = Message("Your account will NOT be removed.")
         }
         return message
     }
@@ -219,7 +219,7 @@ class SlackSlashCommand(
             return RichMessage("No luck man, You're not allowed to do that.")
 
         userService.changeStatus(userId, false)
-        val richMessage = RichMessage("Desactivate Profile : ${userName}")
+        val richMessage = RichMessage("Deactivate Profile : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
         attachments[0] = Attachment()
         attachments[0]!!.setText("Your profile is now inactive.")
@@ -412,9 +412,9 @@ class SlackSlashCommand(
 
         try {
             if (!drawService.release(userId, text)){
-                return Message("You have release the spot for the day (${text}). *BUT* it's a bit late for anyone to pick it. You'll have a blame in the future. Next time keep in mind that's it's important to release earlier as possible ... Thanks")
+                return Message("You have released the spot for the day (${text}). *BUT* it's a bit late for anyone to pick it. You'll have a blame in the future. Next time keep in mind that it's important to release earlier as possible ... Thanks")
             }
-            return Message("You have release the spot for the day (${text}). Another can now pick it. Thanks.")
+            return Message("You have released the spot for the day (${text}). Another can now pick it. Thanks.")
 
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
@@ -442,7 +442,7 @@ class SlackSlashCommand(
 
         try {
             val spot = drawService.pick(userId, text)
-            val message = Message("You have pick the ${spot} for the day (${text}) .")
+            val message = Message("You have picked the ${spot} for the day (${text}) .")
             return message
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
@@ -470,7 +470,7 @@ class SlackSlashCommand(
 
         try {
             val spot = drawService.pick(userId, LocalDate.now())
-            val message = Message("You have pick the ${spot} for today.")
+            val message = Message("You have picked the ${spot} for today.")
             return message
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
@@ -565,7 +565,7 @@ class SlackSlashCommand(
         try {
             val spot = drawService.request(userId, text)
             if (spot != null) {
-                val message = Message("You have pick the ${spot} for the day (${text}) .")
+                val message = Message("You have picked the ${spot} for the day (${text}) .")
                 return message
             }
             val message = Message("Your request for a spot for the day (${text}) is recorded.")
