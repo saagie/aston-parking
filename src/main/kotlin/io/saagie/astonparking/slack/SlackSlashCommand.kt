@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -291,7 +290,7 @@ class SlackSlashCommand(
                         setText("Pending request :  ${requestMessage}")
                     },
                     Attachment().apply {
-                        setText("Chance of being selected :  ${ if (user.enable) { BigDecimal(chance).setScale(2, BigDecimal.ROUND_HALF_UP).toDouble() } else { "0"}}%")
+                        setText("Chance of being selected :  ${chance}")
                     }
             )
             richMessage.attachments = attachments
