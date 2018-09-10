@@ -225,7 +225,7 @@ class DrawService(
     }
 
     @Async
-    fun release(userId: String, text: String): Boolean {
+    fun release(userId: String, text: String) {
         val date = extractDate(text)
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
@@ -242,7 +242,6 @@ class DrawService(
         if (!checkAndPickIfRequest(date)) {
             slackBot.spotRelease(date)
         }
-        return drawRules.checkIfDateIsOk(date)
     }
 
 
