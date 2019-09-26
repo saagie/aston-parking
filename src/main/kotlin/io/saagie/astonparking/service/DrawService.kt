@@ -233,14 +233,15 @@ class DrawService(
         schedule.assignedSpots.removeAll(spotToBeDeleted)
         if (spotToBeDeleted.isNotEmpty()) {
             schedule.freeSpots.add(spotToBeDeleted.first().spotNumber)
-        }
-        scheduleDao.save(schedule)
-        if (drawRules.checkIfDateIsOk(date)) {
-            user.attribution = user.attribution - 1
-            userService.save(user)
-        }
-        if (!checkAndPickIfRequest(date)) {
-            slackBot.spotRelease(date)
+
+            scheduleDao.save(schedule)
+            if (drawRules.checkIfDateIsOk(date)) {
+                user.attribution = user.attribution - 1
+                userService.save(user)
+            }
+            if (!checkAndPickIfRequest(date)) {
+                slackBot.spotRelease(date)
+            }
         }
     }
 
