@@ -6,6 +6,7 @@ buildscript {
         buildScanVersion = '1.13.2'
         gradlePythonPluginVersion = '1.0.2'
         gradleMkdocsPluginVersion = '1.0.1'
+        actionsOnGoogleVersion = '1.7.0'
 	}
 	repositories {
         maven {
@@ -68,6 +69,7 @@ ext.kluentVersion="1.35"
 ext.mockitoVersion="1.5.0"
 
 dependencies {
+    compile ("com.google.actions:actions-on-google:${actionsOnGoogleVersion}")
 	compile('org.springframework.boot:spring-boot-starter')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
