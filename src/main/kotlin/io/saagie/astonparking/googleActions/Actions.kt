@@ -4,22 +4,22 @@ import com.google.actions.api.ActionRequest
 import com.google.actions.api.ActionResponse
 import com.google.actions.api.DialogflowApp
 import com.google.actions.api.ForIntent
-import io.saagie.astonparking.domain.Schedule
-import io.saagie.astonparking.domain.ScheduleSpot
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 import io.saagie.astonparking.service.DrawService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDate
-import java.time.LocalDateTime
+
+
 
 @Component
 class Actions(private val drawService: DrawService) : DialogflowApp() {
-    
+
     @ForIntent("today spots")
     fun todaySpots(request: ActionRequest): ActionResponse {
         LOGGER.info("today spots.")
         val responseBuilder = getResponseBuilder(request)
-        with(drawService.getCurrentSchedules().firstOrNull { it.date == LocalDate.now() }) {
+        with(drawService.getSchedule(LocalDate.now())) {
             if (this == null) {
                 responseBuilder.add("No spots attributed today.")
             } else {
@@ -32,6 +32,7 @@ class Actions(private val drawService: DrawService) : DialogflowApp() {
                 ).joinToString(" ")
                 responseBuilder.add(message)
             }
+            responseBuilder.endConversation();
             return responseBuilder.build()
         }
     }
@@ -40,7 +41,7 @@ class Actions(private val drawService: DrawService) : DialogflowApp() {
     fun todayFreeSpots(request: ActionRequest): ActionResponse {
         LOGGER.info("today free spots.")
         val responseBuilder = getResponseBuilder(request)
-        with(drawService.getCurrentSchedules().firstOrNull { it.date == LocalDate.now() }) {
+        with(drawService.getSchedule(LocalDate.now())) {
             if (this == null) {
                 responseBuilder.add("No spots attributed today.")
             } else {
@@ -53,7 +54,7 @@ class Actions(private val drawService: DrawService) : DialogflowApp() {
                     responseBuilder.add(message)
                 }
             }
-
+            responseBuilder.endConversation();
             return responseBuilder.build()
         }
     }
@@ -63,7 +64,7 @@ class Actions(private val drawService: DrawService) : DialogflowApp() {
         LOGGER.info("today spot.")
         val responseBuilder = getResponseBuilder(request)
         val usernameParam = request.getParameter("username") as String
-        with(drawService.getCurrentSchedules().firstOrNull { it.date == LocalDate.now() }) {
+        with(drawService.getSchedule(LocalDate.now())) {
             if (this == null) {
                 responseBuilder.add("No spots attributed today.")
             } else {
@@ -76,10 +77,10 @@ class Actions(private val drawService: DrawService) : DialogflowApp() {
                     responseBuilder.add(message)
                 }
             }
+            responseBuilder.endConversation();
             return responseBuilder.build()
         }
     }
-
     companion object {
 
         private val LOGGER = LoggerFactory.getLogger(Actions::class.java)

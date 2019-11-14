@@ -136,7 +136,7 @@ class SlackSlashCommand(
         val richMessage = RichMessage("Register : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
         attachments[0] = Attachment()
-        attachments[0]!!.setText("Welcome on Aston Parking ${userName}. Please log in on the website : ${url} to complete your registration.")
+        attachments[0]!!.setText("Welcome on Aston Parking ${userName}.")
         if (!registerUser) {
             attachments[0]!!.setText("You are already registred on AstonParking. Use /ap-profile to see your profile.")
         }

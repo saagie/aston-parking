@@ -37,16 +37,6 @@ class ActionsServlet(private val actionsApp: Actions) : HttpServlet() {
 
     }
 
-    @Throws(IOException::class)
-    @GetMapping("/actions")
-    override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        response.contentType = "text/plain"
-        response
-            .writer
-            .println(
-                "ActionsServlet is listening but requires valid POST request to respond with Action response.")
-    }
-
     private fun writeResponse(res: HttpServletResponse, asJson: String) {
         try {
             res.writer.write(asJson)

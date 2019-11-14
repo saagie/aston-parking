@@ -19,7 +19,6 @@ class DrawService(
         val drawRules: DrawRules,
         val userService: UserService,
         val spotService: SpotService,
-        val emailService: EmailService,
         val slackBot: SlackBot,
         val propositionDao: PropositionDao,
         val scheduleDao: ScheduleDao,
@@ -99,7 +98,6 @@ class DrawService(
             }
         }
         propositionDao.save(propositions)
-        emailService.proposition(propositions, sortedActiveUsers)
         slackBot.proposition(propositions, sortedActiveUsers, nextMonday)
     }
 
@@ -224,6 +222,10 @@ class DrawService(
         return scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
     }
 
+    fun getSchedule(date: LocalDate): Schedule? {
+        return scheduleDao.findByDate(date)
+    }
+
     @Async
     fun release(userId: String, text: String) {
         val date = extractDate(text)
@@ -255,7 +257,6 @@ class DrawService(
             user.attribution += 1
             userService.save(user)
             requestDao.delete(winner.id!!)
-            emailService.pickAfterRequest(userService.get(winner.userId), spot, date)
             return true
         }
         return false
