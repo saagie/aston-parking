@@ -40,6 +40,10 @@ class UserService(
         throw IllegalArgumentException("User (id:${id}) not found")
     }
 
+    fun getByMail(mail: String): User? = userDao.findTopByEmail(mail)
+
+    fun isMailAlreadyTaken(mail: String, id: String): Boolean = userDao.existsByEmailAndIdNot(mail, id)
+
     fun getAll(): List<User> {
         return userDao.findAll() as List<User>
     }
@@ -58,6 +62,10 @@ class UserService(
         val user = get(id)
         user.enable = status
         userDao.save(user)
+    }
+
+    fun changeMail(id: String, mail: String) {
+        userDao.save(get(id).copy(email = mail))
     }
 
     fun save(user: User) {

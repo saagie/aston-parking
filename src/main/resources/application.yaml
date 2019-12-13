@@ -21,7 +21,7 @@ spring:
 # MONGO
   data:
     mongodb:
-      uri: mongodb://${ASTON_PARKING_MONGO_URI}
+      uri: mongodb://${ASTON_PARKING_MONGO_URI:test}
 ##########################
 # SECURITY
 slack:

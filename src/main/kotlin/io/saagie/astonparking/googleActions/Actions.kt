@@ -4,83 +4,118 @@ import com.google.actions.api.ActionRequest
 import com.google.actions.api.ActionResponse
 import com.google.actions.api.DialogflowApp
 import com.google.actions.api.ForIntent
+import com.google.actions.api.response.helperintent.SignIn
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
+import io.saagie.astonparking.exceptions.PickException
+import io.saagie.astonparking.security.BasicAuthConfig
 import io.saagie.astonparking.service.DrawService
+import io.saagie.astonparking.service.UserService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 
 
+
+
 @Component
-class Actions(private val drawService: DrawService) : DialogflowApp() {
-
-    @ForIntent("today spots")
-    fun todaySpots(request: ActionRequest): ActionResponse {
-        LOGGER.info("today spots.")
-        val responseBuilder = getResponseBuilder(request)
-        with(drawService.getSchedule(LocalDate.now())) {
-            if (this == null) {
-                responseBuilder.add("No spots attributed today.")
-            } else {
-                val message = assignedSpots.sortedBy { it.spotNumber }.map { spot ->
-                    "${spot.spotNumber} ${spot.username}"
-                }.plus(
-                    freeSpots.sorted().map { spotNumber ->
-                        "$spotNumber FREE"
-                    }
-                ).joinToString(" ")
-                responseBuilder.add(message)
-            }
-            responseBuilder.endConversation();
-            return responseBuilder.build()
-        }
-    }
-
-    @ForIntent("today free spots")
-    fun todayFreeSpots(request: ActionRequest): ActionResponse {
-        LOGGER.info("today free spots.")
-        val responseBuilder = getResponseBuilder(request)
-        with(drawService.getSchedule(LocalDate.now())) {
-            if (this == null) {
-                responseBuilder.add("No spots attributed today.")
-            } else {
-                val message = freeSpots.sorted().joinToString(" ") { spotNumber ->
-                    "$spotNumber FREE"
-                }
-                if (message.isBlank()) {
-                    responseBuilder.add("No available spots.")
-                } else {
-                    responseBuilder.add(message)
-                }
-            }
-            responseBuilder.endConversation();
-            return responseBuilder.build()
-        }
-    }
+class Actions(private val drawService: DrawService, private val userService: UserService, private val basicAuthConfig: BasicAuthConfig) : DialogflowApp() {
 
     @ForIntent("today spot")
     fun todaySpot(request: ActionRequest): ActionResponse {
         LOGGER.info("today spot.")
         val responseBuilder = getResponseBuilder(request)
-        val usernameParam = request.getParameter("username") as String
-        with(drawService.getSchedule(LocalDate.now())) {
-            if (this == null) {
-                responseBuilder.add("No spots attributed today.")
+        if (request.user?.userVerificationStatus != "VERIFIED") {
+            responseBuilder.add("Vous n'êtes pas autorise a reserver une place")
+            responseBuilder.endConversation()
+        }
+
+        if (request.user != null && userIsSignedIn(request)) {
+            val mail = getUserProfile(request.user!!.idToken).email
+            val user = userService.getByMail(mail)
+            if (user == null) {
+                responseBuilder.add("L'email qui vous utilisez n'est pas lie a votre compte aston parking. " +
+                    "S'il vous plait, utilisez la commande slack ap-link pour lier votre email")
+                responseBuilder.endConversation()
             } else {
-                val message = assignedSpots.filter { it.username.toLowerCase() == usernameParam.toLowerCase() }.map { spot ->
-                    "${spot.spotNumber} ${spot.username}"
-                }.joinToString(" ")
-                if (message.isBlank()) {
-                    responseBuilder.add("You have no spot today.")
-                } else {
+                with(drawService.getSchedule(LocalDate.now())) {
+                    if (this == null) {
+                        responseBuilder.add("Pas de places attribuees aujourd'hui")
+                        responseBuilder.endConversation()
+                    } else {
+                        val message = assignedSpots.filter { it.userId == user.id }.joinToString(" ") { spot ->
+                            "Votre place est la place ${spot.spotNumber}"
+                        }
+                        if (message.isBlank()) {
+                            responseBuilder.add("Vous n'avez pas de place aujourd'hui")
+                            responseBuilder.add("Voulez vous reserver une place?")
+                        } else {
+                            responseBuilder.add(message)
+                            responseBuilder.endConversation()
+                        }
+                    }
+                    return responseBuilder.build()
+                }
+            }
+        } else {
+            responseBuilder.add(
+                SignIn()
+                    .setContext("You are signed in"))
+            return responseBuilder.build()
+        }
+        responseBuilder.endConversation()
+        return responseBuilder.build()
+    }
+
+    @ForIntent("pick today")
+    fun pickToday(request: ActionRequest): ActionResponse {
+        LOGGER.debug("pick today.")
+        val responseBuilder = getResponseBuilder(request)
+
+        if (request.user?.userVerificationStatus != "VERIFIED") {
+            responseBuilder.add("Vous n'etes pas autorises a prendre une place")
+        }
+
+        if (request.user != null && userIsSignedIn(request)) {
+            val mail = getUserProfile(request.user!!.idToken).email
+            val user = userService.getByMail(mail)
+            if (user == null) {
+                responseBuilder.add("L'email qui vous utilisez n'est pas lie a votre compte aston parking. " +
+                    "S'il vous plait, utilisez la commande slack ap-link pour lier votre email")
+            } else {
+                try {
+                    val spot = drawService.pick(user.id!!, LocalDate.now())
+                    responseBuilder.add("Vous avez la place $spot pour aujourd'hui.")
+                } catch (e: Exception) {
+                    val message = when (e) {
+                        is PickException.NoScheduleError -> "Pas de places attribuees aujourd'hui"
+                        is PickException.NoFreeSpotsError -> "Pas de places disponibles aujourd'hui"
+                        is PickException.AlreadyPickError -> "Une place est deja reserve pour vous aujourd'hui"
+                        else -> "Un erreur s'est produite."
+                    }
                     responseBuilder.add(message)
                 }
             }
-            responseBuilder.endConversation();
+        } else {
+            responseBuilder.add(
+                SignIn()
+                    .setContext("You are signed in"))
             return responseBuilder.build()
         }
+        responseBuilder.endConversation()
+        return responseBuilder.build()
     }
+
+    private fun userIsSignedIn(request: ActionRequest): Boolean {
+        val idToken = request.user?.idToken
+        LOGGER.info(String.format("Id token: %s", idToken))
+        return !(idToken == null || idToken.isEmpty())
+    }
+
+    private fun getUserProfile(idToken: String): GoogleIdToken.Payload {
+        return TokenDecoder(basicAuthConfig.clientId).decodeIdToken(idToken)
+    }
+
     companion object {
 
         private val LOGGER = LoggerFactory.getLogger(Actions::class.java)

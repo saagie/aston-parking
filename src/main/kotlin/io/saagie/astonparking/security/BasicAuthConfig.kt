@@ -6,9 +6,10 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "user")
+@ConfigurationProperties(prefix = "google.actions")
 class BasicAuthConfig {
 
-    var username: String? = ""
-    var password: String? = ""
+    var username: String = ""
+    var password: String = ""
+    var clientId: String = ""
 }

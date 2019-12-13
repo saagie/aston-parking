@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 interface UserDao : CrudRepository<User, String> {
     fun findByEnable(active: Boolean): List<User>
     fun findByUnregister(unregister: Boolean): List<User>
+    fun findTopByEmail(mail: String): User?
+    fun existsByEmailAndIdNot(mail: String, id: String): Boolean
 }

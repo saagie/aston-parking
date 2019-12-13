@@ -6,7 +6,7 @@ buildscript {
         buildScanVersion = '1.13.2'
         gradlePythonPluginVersion = '1.0.2'
         gradleMkdocsPluginVersion = '1.0.1'
-        actionsOnGoogleVersion = '1.7.0'
+        actionsOnGoogleVersion = '1.8.0'
 	}
 	repositories {
         maven {

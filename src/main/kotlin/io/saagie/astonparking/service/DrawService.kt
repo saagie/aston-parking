@@ -4,6 +4,7 @@ import io.saagie.astonparking.dao.PropositionDao
 import io.saagie.astonparking.dao.RequestDao
 import io.saagie.astonparking.dao.ScheduleDao
 import io.saagie.astonparking.domain.*
+import io.saagie.astonparking.exceptions.PickException
 import io.saagie.astonparking.rule.DrawRules
 import io.saagie.astonparking.slack.SlackBot
 import org.springframework.scheduling.annotation.Async
@@ -278,11 +279,11 @@ class DrawService(
     fun pick(userId: String, date: LocalDate): Int {
         val user = userService.get(userId)
         val schedule = scheduleDao.findByDate(date)
-                ?: throw IllegalArgumentException("No schedule for the date ${date}")
+                ?: throw PickException.NoScheduleError(date)
         if (schedule.freeSpots.isEmpty())
-            throw IllegalArgumentException("No free spot for the date ${date}")
+            throw PickException.NoFreeSpotsError(date)
         if (schedule.assignedSpots.count { it.userId == userId } > 0)
-            throw IllegalArgumentException("A spot is already reserved for you")
+            throw PickException.AlreadyPickError
         val freeSpot = schedule.freeSpots.first()
         schedule.freeSpots.removeAt(0)
         if (!schedule.userSelected.contains(user.id)) {
