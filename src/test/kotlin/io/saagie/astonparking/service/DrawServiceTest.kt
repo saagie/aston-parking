@@ -52,9 +52,6 @@ class DrawServiceTest {
 
     }
 
-    val emailService = mock<EmailService> {
-
-    }
     val propositionDao = mock<PropositionDao> {
         on { findAll() } `it returns` allPropositions
     }
@@ -76,7 +73,7 @@ class DrawServiceTest {
         on { sortAndFilterUsers()} `it returns` allUsers
     }
 
-    val drawService = DrawService(drawRules,userService, spotService, emailService, slackBot, propositionDao, scheduleDao, requestDao)
+    val drawService = DrawService(drawRules,userService, spotService, slackBot, propositionDao, scheduleDao, requestDao)
 
 
     @Test
@@ -145,7 +142,6 @@ class DrawServiceTest {
         drawService.attribution(null)
         //Then
         verify(propositionDao, times(1)).save(Mockito.anyListOf(Proposition::class.java))
-        verify(emailService, times(1)).proposition(Mockito.anyListOf(Proposition::class.java), Mockito.anyListOf(User::class.java))
         verify(userService, times(3)).save(any())
     }
 

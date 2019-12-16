@@ -8,7 +8,6 @@ import io.saagie.astonparking.domain.Request
 import io.saagie.astonparking.domain.Schedule
 import io.saagie.astonparking.domain.State
 import io.saagie.astonparking.service.DrawServiceTest
-import io.saagie.astonparking.service.EmailService
 import io.saagie.astonparking.service.SpotService
 import io.saagie.astonparking.service.UserService
 import io.saagie.astonparking.slack.SlackBot

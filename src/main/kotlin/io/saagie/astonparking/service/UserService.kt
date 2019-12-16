@@ -15,8 +15,7 @@ import java.time.format.DateTimeFormatterBuilder
 import java.util.function.Consumer
 @Service
 class UserService(
-        val userDao: UserDao,
-        val emailService: EmailService) {
+        val userDao: UserDao) {
 
     fun registerUser(username: String, id: String): Boolean {
         if (!userDao.exists(id)) {
@@ -34,37 +33,16 @@ class UserService(
         return user.unregister
     }
 
-    fun updateUserInfo(map: Map<String, Any>) {
-        val userMap = map.get("user") as Map<*, *>
-        val id = userMap.get("id") as String
-        if (userDao.exists(id)) {
-            val user = userDao.findOne(id)
-            val activatedUser = user.activated
-            user.apply {
-                email = userMap.get("email") as String
-                image_24 = userMap.get("image_24") as String
-                image_32 = userMap.get("image_32") as String
-                image_48 = userMap.get("image_48") as String
-                image_72 = userMap.get("image_72") as String
-                image_192 = userMap.get("image_192") as String
-                image_512 = userMap.get("image_512") as String
-                activated = true
-
-            }
-            if (!activatedUser) {
-                user.enable = true
-                emailService.profileCreated(user)
-            }
-            userDao.save(user)
-        }
-    }
-
     fun get(id: String): User {
         if (userDao.exists(id)) {
             return userDao.findOne(id)
         }
         throw IllegalArgumentException("User (id:${id}) not found")
     }
+
+    fun getByMail(mail: String): User? = userDao.findTopByEmail(mail)
+
+    fun isMailAlreadyTaken(mail: String, id: String): Boolean = userDao.existsByEmailAndIdNot(mail, id)
 
     fun getAll(): List<User> {
         return userDao.findAll() as List<User>
@@ -78,14 +56,16 @@ class UserService(
         val user = get(id)
         user.enable = !user.enable
         userDao.save(user)
-        emailService.profileStatusChange(user)
     }
 
     fun changeStatus(id: String, status: Boolean) {
         val user = get(id)
         user.enable = status
         userDao.save(user)
-        emailService.profileStatusChange(user)
+    }
+
+    fun changeMail(id: String, mail: String) {
+        userDao.save(get(id).copy(email = mail))
     }
 
     fun save(user: User) {

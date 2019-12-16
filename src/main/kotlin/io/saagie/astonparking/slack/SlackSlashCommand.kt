@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.ArrayList
-import kotlin.math.round
 
 
 @RestController
@@ -107,6 +105,9 @@ class SlackSlashCommand(
                 },
                 Attachment().apply {
                     setText("/ap-request-cancel : to cancel your current request")
+                },
+                Attachment().apply {
+                    setText("/ap-link mail : to link your aston parking profile to your google assistant mail")
                 }
         )
         richMessage.attachments = attachments
@@ -136,7 +137,7 @@ class SlackSlashCommand(
         val richMessage = RichMessage("Register : ${userName}")
         val attachments = arrayOfNulls<Attachment>(1)
         attachments[0] = Attachment()
-        attachments[0]!!.setText("Welcome on Aston Parking ${userName}. Please log in on the website : ${url} to complete your registration.")
+        attachments[0]!!.setText("Welcome on Aston Parking ${userName}.")
         if (!registerUser) {
             attachments[0]!!.setText("You are already registred on AstonParking. Use /ap-profile to see your profile.")
         }
@@ -599,5 +600,32 @@ class SlackSlashCommand(
         } catch (iae: IllegalArgumentException) {
             return Message(iae.message)
         }
+    }
+
+    @RequestMapping(value = ["/slack/link"],
+        method = [(RequestMethod.POST)],
+        consumes = [(MediaType.APPLICATION_FORM_URLENCODED_VALUE)])
+    fun onReceiveLinkCommand(@RequestParam("token") token: String,
+                             @RequestParam("team_id") teamId: String,
+                             @RequestParam("team_domain") teamDomain: String,
+                             @RequestParam("channel_id") channelId: String,
+                             @RequestParam("channel_name") channelName: String,
+                             @RequestParam("user_id") userId: String,
+                             @RequestParam("user_name") userName: String,
+                             @RequestParam("command") command: String,
+                             @RequestParam("text") text: String,
+                             @RequestParam("response_url") responseUrl: String): Message {
+
+        // validate token
+        if (token != slackVerificationToken) {
+            return Message("No luck man, You're not allowed to do that.")
+        }
+        if (userService.isMailAlreadyTaken(text, userId)) {
+            return Message("Sorry, this mail is already taken by another user.")
+        }
+        userService.changeMail(userId, text)
+        return Message("You have linked your aston parking profile with the google assistant account ${text}.")
+
+
     }
 }

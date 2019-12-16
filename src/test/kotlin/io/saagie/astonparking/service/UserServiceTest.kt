@@ -27,12 +27,8 @@ class UserServiceTest {
         on { findByEnable(true) }.doReturn(allUser.filter { it.activated })
     }
 
-    val emailService: EmailService = mock<EmailService> {
 
-    }
-
-
-    val userService = UserService(userDao, emailService)
+    val userService = UserService(userDao)
 
     @Test
     fun should_return_an_existing_user() {
@@ -99,7 +95,7 @@ class UserServiceTest {
         userCaptor.value.id `should equal` "id"
         userCaptor.value.username `should equal` "username"
         userCaptor.value.creationDate `should not equal` null
-        userCaptor.value.enable `should be` false
+        userCaptor.value.enable `should be` true
         userCaptor.value.activated `should be` false
         userCaptor.value.email `should be` null
     }
@@ -113,38 +109,6 @@ class UserServiceTest {
         //Then
         registerUser `should be` false
         verify(userDao, never()).save(userCaptor.capture())
-    }
-
-
-    @Test
-    fun should_update_user() {
-        //Given
-        val user = allUser.filter { !it.activated }.first()
-        val mapUser = mapOf<String, Any>(
-                Pair("user", mapOf(
-                        Pair("id", user.id!!),
-                        Pair("email", "mail@mail.com"),
-                        Pair("image_24", "image_24"),
-                        Pair("image_32", "image_32"),
-                        Pair("image_48", "image_48"),
-                        Pair("image_72", "image_72"),
-                        Pair("image_192", "image_192"),
-                        Pair("image_512", "image_512")
-                ))
-        )
-        //When
-        userService.updateUserInfo(mapUser)
-        //Then
-        verify(userDao, times(1)).save(userCaptor.capture())
-        val userSaved = userCaptor.value
-        userSaved.activated `should be` true
-        userSaved.enable `should be` true
-        userSaved.image_24 shouldEqual "image_24"
-        userSaved.image_32 shouldEqual "image_32"
-        userSaved.image_48 shouldEqual "image_48"
-        userSaved.image_72 shouldEqual "image_72"
-        userSaved.image_192 shouldEqual "image_192"
-        userSaved.image_512 shouldEqual "image_512"
     }
 
     @Test
