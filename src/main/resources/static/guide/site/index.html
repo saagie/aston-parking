@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Aston Parking</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Guide d\u0027utilisation d\u0027Aston Parking";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Aston Parking
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Guide d'utilisation d'Aston Parking</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#aston-parking-cest-quoi">Aston Parking, c'est quoi ?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#senregister">S'enregister</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#les-attributions">Les attributions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#les-commandes">Les commandes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#le-projet">Le projet</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Aston Parking</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Guide d'utilisation d'Aston Parking</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="guide-dutilisation-daston-parking">Guide d'utilisation d'Aston Parking</h1>
+<h2 id="aston-parking-cest-quoi">Aston Parking, c'est quoi ?</h2>
+<p>Aston Parking est un outils de gestion des places de parking utilisé en interne chez <a href="http://saagie.com">Saagie</a>. Elle permet l'attribution automatique et équitable entre tous les participants, ainsi qu'un système d'échange. </p>
+<p>Actuellement, toutes les actions se font sur Slack. Un site web devrait voir le jour prochainement en plus. Un bot "AstonParkingBot" permet de gérer toutes les demandes des participants (toutes ses réponses se font de manière privée afin de ne pas poluer le channel).</p>
+<h2 id="senregister">S'enregister</h2>
+<p>Prémière étape obligatoire pour être enregisté dans l'application : l'enregistrement.
+Celui-ci a lieu en deux étape : l'inscription et la confirmation.</p>
+<p>Connectez-vous au channel #aston-parking sur Slack et tapez la commande : <code>/ap-register</code> (toutes les commandes AstonParking commencent par /ap- afin d'être facilement identifiables). Le bot vous demandera alors de confirmer votre inscription en vous connectant au website (le lien est indiqué dans sa réponse).</p>
+<p>Connectez-vous sur le site en utilisant la connection OAuth Slack (cela permet de valider votre inscription).</p>
+<p>Vous êtes maintenant enregistré à l'application. Vous pouvez vérifier l'état de votre enregistrement en tapant <code>/ap-profile</code></p>
+<h2 id="les-attributions">Les attributions</h2>
+<p>Le fonctionnement d'Aston Parking est simple : </p>
+<p>Tous les lundis (à 11H), un tirage au sort est effectué. Toutes les places libres sont affectées. Chaque utilisateur possède un compteur d'attribution (chaque jour où une place est attribuée). La liste des utilisateurs est triée par nombre d'attribution afin d'être équitable dans l'attribution des places.</p>
+<p>La liste des attribution est affichée en public sur le channel Slack après le tirage au sort. </p>
+<p>Les personnes sélectionnées ont alors, jusqu'au dimanche pour valider <code>/ap-accept</code> ou refuser <code>/ap-decline</code> les propositions (on accepte ou on refuse tout, on ne peut pas le faire partiellement pour le moment). De plus, les places sont attribuées à la journée (à voir dans les versions suivantes pour mettre en place les demi-journées).</p>
+<p>Dimanche matin, les places non validées sont marquées comme libres et peuvent être réservée par n'importe qui.</p>
+<p>Lorsque l'on refuse la proposition, un nouveau tirage au sort pour cette place est faite et une nouvelle proposition est faite à quelqu'un d'autre.</p>
+<p>Lorsqu'on accepte les places, son compteur d'attribution augmente alors de 5 (nombre de jours). Il suffit de libérer la place pour les jours où l'on en a pas besoin <code>/ap-release dd/MM</code> (dd/MM représente le jour/mois) pour que la place soit marquée comme libre et qu'elle puisse être récupérée par quelqu'un d'autre <code>/ap-pick dd/MM</code>. La personne qui a libéré la place voit son compteur d'attribution diminuer de 1 et celui qui a pris la place voit le sien augmenter de 1.</p>
+<p>Lorsqu'une place est libérée, un message en public est publiée sur le channel Slack.</p>
+<h2 id="les-commandes">Les commandes</h2>
+<p>Voici la liste de toutes les commandes possibles : </p>
+<ul>
+<li><code>/ap-command</code> - Affiche la liste de toutes les commandes.</li>
+<li><code>/ap-register</code> - Permet l'enregistrement à l'application.</li>
+<li><code>/ap-unregister</code> - Lance la suppression du compte.</li>
+<li><code>/ap-profile</code> - Affiche le profile et ses infos.</li>
+<li><code>/ap-attribution</code> - Affiche la liste des propositions d'affection pour la semaine suivante et les attribution pour la semaine en cours.</li>
+<li><code>/ap-planning</code> - Affiche son planning pour la semaine en cours et la semaine suivante.</li>
+<li><code>/ap-today</code> - Affiche les attributions du jour.</li>
+<li><code>/ap-inactive-profile</code> - Désactive le profile (utile pour ne pas être tiré au sort pendant les vacances par exemple).</li>
+<li><code>/ap-active-profile</code> - Active le profile (au retour des vacances par exemple) et permet d'être, à nouveau, tiré au sort.</li>
+<li><code>/ap-accept</code> - Permet d'accepter les propositions d'attribution qu'on a reçues.</li>
+<li><code>/ap-decline</code> - Permet de refuser les propositions d'attribution qu'on a reçues.</li>
+<li><code>/ap-release dd/MM</code> - Permet de libérer la place attribuée pour le jour indiqué.</li>
+<li><code>/ap-pick dd/MM</code> - Permet de s'approprier une place libre pour le jour indiqué.</li>
+<li><code>/ap-pick-today</code> - Permet de s'approprier une place libre aujourd'hui (si disponible).</li>
+<li><code>/ap-request dd/MM</code> - Permet de réserver une place pour le jour "dd/MM" dès qu'une place se libère (attention : compte comme double en cas d'attribution)</li>
+<li><code>/ap-request-cancel</code> - Permet d'annuler la requête en cours.</li>
+</ul>
+<h2 id="le-projet">Le projet</h2>
+<p>Ce projet est open-source et disponible sur <a href="https://github.com/saagie/aston-parking">Github saagie/aston-parking</a></p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.4.2
+Build Date UTC : 2022-12-13 14:33:18.351261+00:00
+-->

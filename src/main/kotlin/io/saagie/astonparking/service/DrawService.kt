@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Month
+import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -34,21 +36,7 @@ class DrawService(
         this.fixedSpots()
     }
 
-    @Scheduled(cron = "0 0 7 * * MON")
-    fun removeUnregisterUser() {
-        val users = userService.findByUnregister(true)
-        users.forEach {
-            val userId = it.id
-            userService.delete(userId!!)
-            val date = LocalDate.now()
-            val schedules = scheduleDao.findByDateIn(listOf(date, date.plusDays(1), date.plusDays(2), date.plusDays(3), date.plusDays(4)))
-            schedules.filter({ it.assignedSpots.map { it.userId }.contains(userId) }).forEach {
-                val dateFormat = date.format(DateTimeFormatter.ofPattern("dd/MM"))
-                release(userId, dateFormat)
-            }
-            scheduleDao.save(schedules)
-        }
-    }
+
 
     @Scheduled(cron = "0 0 0 * * *")
     fun resetRequest() {
@@ -96,6 +84,18 @@ class DrawService(
                 propositions.addAll(generateAllProposition(it.number, user.id!!, nextMonday))
                 user.alreadySelected = true
                 userService.save(user)
+            }else{
+                for (i:Int in 0..6){
+                    var schedule = Schedule(
+                        date = nextMonday.plusDays(i.toLong()),
+                        assignedSpots = arrayListOf(),
+                        freeSpots = arrayListOf(),
+                        userSelected = arrayListOf()
+                    )
+                    schedule.freeSpots.add(it.number)
+                    scheduleDao.save(schedule)
+                }
+                userService
             }
         }
         propositionDao.save(propositions)
@@ -265,7 +265,15 @@ class DrawService(
         val now = LocalDate.now()
         try {
             val date = LocalDate.parse(text + "/${now.year}", DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-            if (now.isAfter(date)) {
+            val yearToAdd = if (date.month == Month.JANUARY && now.month == Month.DECEMBER )
+            {
+                1
+            } else{
+                0
+            }
+
+            if (now.isAfter(
+                    date.plusYears(yearToAdd.toLong()))) {
                 throw IllegalArgumentException("Date can't be before today")
             }
             return date

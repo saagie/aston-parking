@@ -48,5 +48,10 @@ slack:
     authenticationScheme: query
     clientAuthenticationScheme: form
     scope: identity.basic,identity.email,identity.avatar,identity.team
+    pre-established-redirect-uri: "https://astonparking.lutty.fr/login/slack"
+    registered-redirect-uri: "https://astonparking.lutty.fr/login/slack"
+    use-current-uri: false
   resource:
-    userInfoUri: https://slack.com/api/users.identity?token=
+    userInfoUri: https://slack.com/api/users.identity
+    tokenType: Bearer
+    preferTokenInfo: false

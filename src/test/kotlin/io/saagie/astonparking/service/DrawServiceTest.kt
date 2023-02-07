@@ -173,7 +173,7 @@ class DrawServiceTest {
     @Test
     fun should_add_request() {
         //Given
-        val date = LocalDate.now().plusDays(1)
+        val date = LocalDate.now().plusDays(3)
         //When
         drawService.request("ID1", "${date.format(DateTimeFormatter.ofPattern("dd/MM"))}")
         //Then
